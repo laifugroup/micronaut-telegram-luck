@@ -11,4 +11,5 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
+    <logger level="TRACE" name="io.micronaut.http.client"/>
 </configuration>

@@ -1,12 +1,28 @@
 micronaut:
+  http:
+    client:
+      default-charset: UTF-8
+      log-level: trace
+      proxy-address: http://127.0.0.1:33210
+      proxy-type: http
+
+    services:
+      telegram:
+        default-charset: utf-8
+        url: https://api.telegram.org
+        connect-timeout: 5s
+        read-timeout: 5s
   application:
     name: micronaut-telegram-luck
   server:
     port: 1960
   chatbots:
     telegram:
+      endpoint:
+        enabled: true
+        path: "/telegram"
       bots:
-        luckBot:
+        battleBot:
           token: "zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
           at-username: '@battleBot'
     folder: botcommands

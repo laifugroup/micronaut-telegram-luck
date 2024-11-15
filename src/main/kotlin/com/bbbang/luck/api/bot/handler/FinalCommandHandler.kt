@@ -1,4 +1,4 @@
-package com.bbbang.luck
+package com.bbbang.luck.api.bot.handler
 
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
