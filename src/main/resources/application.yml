@@ -1,45 +1,121 @@
 micronaut:
   application:
     name: micronaut-telegram-luck
+  server:
+    port: 1960
   chatbots:
     telegram:
       bots:
-        example:
-          token: WEBHOOK_TOKEN
-          at-username: '@MyMicronautExampleBot'
+        luckBot:
+          token: "zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
+          at-username: '@battleBot'
     folder: botcommands
+  security:
+    enabled: true
+    intercept-url-map:
+      - pattern: /**
+        httpMethod: OPTIONS
+        access:
+          - isAnonymous()
+      - pattern: /swagger/**
+        access:
+          - isAnonymous()
+      - pattern: /swagger-ui/**
+        access:
+          - isAnonymous()
+      - pattern: /html/**
+        access:
+          - isAnonymous()
+      - pattern: /telegramBot/callback
+        access:
+          - isAnonymous()
+      - pattern: /v1/**
+        access:
+          - isAuthenticated()
+
+    authentication: bearer
+    token:
+      rolesSeparator: ","
+      name-key: "sub"
+      roles-name: "roles"
+      jwt:
+        signatures:
+          jwks: #work good
+            oauth2-vertx:
+              url: ${OAUTH2_KEYS:`http://localhost:1910/keys`}
+              cache-expiration: 3600
+        claims-validators:
+          issuer: "oauth2-vertx"
+          expiration: true
+        enabled: true
   router:
     static-resources:
-      jsonschema:
-        paths: classpath:META-INF/schemas
-        mapping: /schemas/**
       swagger:
         paths: classpath:META-INF/swagger
         mapping: /swagger/**
       swagger-ui:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
-  security:
-    authentication: bearer
-    token:
-      jwt:
-        signatures:
-          secret:
-            generator:
-              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+  caches:
+    users:
+      charset: 'UTF-8'
+      maximum-size: 1000
+    platform:
+      charset: 'UTF-8'
+      maximum-size: 100
+jpa:
+  default:
+    compile-time-hibernate-proxies: true
+    properties:
+      hibernate:
+        # dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: none # create create-drop update validate none
+        #        connection:
+        #          db-type: postgres
+        #          url: ${app.db.url:`jdbc:postgresql://coarse-gosling-2563.g95.cockroachlabs.cloud:26257/db2?sslmode=verify-ca`}
+        #          url: "jdbc:postgresql://${vertx.pg.client.host}:${vertx.pg.client.port}/${vertx.pg.client.database}?ssl=${vertx.pg.client.ssl}&sslmode=${vertx.pg.client.ssl-mode}"
+        #          driverClassName: org.postgresql.Driver
+        #          username: ${vertx.pg.client.user}
+        #          password: ${vertx.pg.client.password}
+        show_sql: true
+        format_sql: true
+    reactive: false
+    entity-scan:
+      packages:
+        - com.bbbang.luck.domain.po
 datasources:
   default:
     driver-class-name: org.postgresql.Driver
     db-type: postgres
     dialect: POSTGRES
-redis.uri: redis://localhost
-jpa:
-  default:
-    properties:
-      hibernate:
-        hbm2ddl:
-          auto: none
+    url: "jdbc:postgresql://${vertx.pg.client.host}:${vertx.pg.client.port}/${vertx.pg.client.database}?ssl=${vertx.pg.client.ssl}&sslmode=${vertx.pg.client.ssl-mode}"
+    username: ${vertx.pg.client.user}
+    password: ${vertx.pg.client.password}
+    schema: ${app.db.schema:`luck`}
+    connection-timeout: 10000
+    auto-commit: true
+    idle-timeout: 10
+    minimum-idle: 5
+    maximum-pool-size: 100
+    #data-source: POSTGRES
+    transaction-isolation: TRANSACTION_REPEATABLE_READ
+
+
+#redis.uri: redis://localhost
+
+vertx:
+  pg:
+    client:
+      port: ${app.db.port:`5432` }
+      host: ${app.db.host:`localhost` }
+      database: ${app.db.database:`db2` }
+      user: ${app.db.username:`postgres` }
+      password: ${app.db.password:`DEpn1Y9gM3ys2v6g`}
+      maxSize: 5
+      ssl: false
+      ssl-mode: disable
 flyway:
   datasources:
     default:
-      enabled: true
+      enabled: false

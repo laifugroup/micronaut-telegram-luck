@@ -43,6 +43,25 @@ dependencies {
     kapt("io.micronaut.jsonschema:micronaut-json-schema-processor")
     kapt("io.micronaut.openapi:micronaut-openapi")
     kapt("io.micronaut.security:micronaut-security-annotations")
+
+
+
+    kapt "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    kapt("io.micronaut.data:micronaut-data-processor")
+    kaptTest "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    //mapstruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    //license
+    shadow ("com.bbbang.parent:platform-license-library-keymgr:${licenseVersion}", {
+//        exclude group: 'org.slf4j', module: 'slf4j-api'
+//        exclude group: 'org.slf4j', module: 'slf4j-simple'
+//        exclude group: 'org.slf4j', module: 'slf4j-nop'
+    })
+    shadow ("global.namespace.truelicense:truelicense:4.0.3")
+    implementation("com.bbbang.parent:parent-virtual:2.0.0")
+
+
     implementation("io.micronaut:micronaut-aop")
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut:micronaut-management")
