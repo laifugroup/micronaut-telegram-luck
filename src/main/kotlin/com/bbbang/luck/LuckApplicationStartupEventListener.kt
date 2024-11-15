@@ -28,7 +28,7 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
             println("[证书]许可已到期或不正确,请向服务商获取新证书。")
             exitProcess(-1)
         }
-        registerTelegram()
+       // registerTelegram()
     }
     private fun registerTelegram(){
         try{
