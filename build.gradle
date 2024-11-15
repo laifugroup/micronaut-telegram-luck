@@ -1,0 +1,137 @@
+//buildscript {
+//    repositories {
+//        println "aliyun repositories"
+//        maven { url 'https://maven.aliyun.com/repository/google' }
+//        maven { url 'https://maven.aliyun.com/repository/central' }
+//        maven { url 'https://maven.aliyun.com/repository/public' }
+//    }
+//
+//    allprojects {
+//        println "aliyun allprojects ${project.name}"
+//        repositories {
+//            maven { url 'https://maven.aliyun.com/repository/google' }
+//            maven { url 'https://maven.aliyun.com/repository/central' }
+//            maven { url 'https://maven.aliyun.com/repository/public' }
+//        }
+//    }
+//}
+
+plugins {
+    id("org.jetbrains.kotlin.jvm") version "1.9.25"
+    id("org.jetbrains.kotlin.kapt") version "1.9.25"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.25"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.9.25"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.4.4"
+    id("io.micronaut.test-resources") version "4.4.4"
+    id("io.micronaut.aot") version "4.4.4"
+}
+
+version = "1.0.0"
+group = "com.bbbang.luck"
+
+repositories {
+    mavenLocal()
+   // maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+
+
+dependencies {
+    kapt("io.micronaut.data:micronaut-data-processor")
+    kapt("io.micronaut:micronaut-http-validation")
+    kapt("io.micronaut.jsonschema:micronaut-json-schema-processor")
+    kapt("io.micronaut.openapi:micronaut-openapi")
+    kapt("io.micronaut.security:micronaut-security-annotations")
+    implementation("io.micronaut:micronaut-aop")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut:micronaut-retry")
+    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
+    implementation("io.micronaut.cache:micronaut-cache-caffeine")
+    implementation("io.micronaut.chatbots:micronaut-chatbots-telegram-http")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut.email:micronaut-email-javamail")
+    implementation("io.micronaut.email:micronaut-email-template")
+    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.jsonschema:micronaut-json-schema-annotations")
+    implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
+    implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
+    implementation("io.micronaut.multitenancy:micronaut-multitenancy")
+    implementation("io.micronaut.redis:micronaut-redis-lettuce")
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.views:micronaut-views-fieldset")
+    implementation("io.micronaut.views:micronaut-views-thymeleaf")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    compileOnly("io.micronaut:micronaut-http-client")
+    compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+    runtimeOnly("org.eclipse.angus:angus-mail")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.yaml:snakeyaml")
+    testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("io.micronaut.jsonschema:micronaut-json-schema-validation")
+    aotPlugins platform("io.micronaut.platform:micronaut-platform:4.7.0")
+    aotPlugins("io.micronaut.security:micronaut-security-aot")
+}
+
+
+application {
+    mainClass = "com.bbbang.luck.LuckApplicationKt"
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("21")
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.bbbang.luck.*")
+    }
+    testResources {
+        enabled = false // true by default
+        version = "1.0.0" // override Micronaut Test Resources version
+        explicitPort = 15471 // by default, uses a random port
+        inferClasspath = true // true by default
+        additionalModules.add(JDBC_MYSQL) // empty by default
+        // additionalModules.add("hibernate-reactive-postgresql")
+        clientTimeout = 60 // in seconds, maximum time to wait for resources to be available, 60s by default
+        sharedServer = true // false by default
+        sharedServerNamespace = 'custom' // unset by default
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+        configurationProperties.put("micronaut.security.jwks.enabled","false")
+    }
+}
+
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "21"
+}
+
+

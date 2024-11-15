@@ -1,0 +1,45 @@
+micronaut:
+  application:
+    name: micronaut-telegram-luck
+  chatbots:
+    telegram:
+      bots:
+        example:
+          token: WEBHOOK_TOKEN
+          at-username: '@MyMicronautExampleBot'
+    folder: botcommands
+  router:
+    static-resources:
+      jsonschema:
+        paths: classpath:META-INF/schemas
+        mapping: /schemas/**
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+datasources:
+  default:
+    driver-class-name: org.postgresql.Driver
+    db-type: postgres
+    dialect: POSTGRES
+redis.uri: redis://localhost
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+flyway:
+  datasources:
+    default:
+      enabled: true
