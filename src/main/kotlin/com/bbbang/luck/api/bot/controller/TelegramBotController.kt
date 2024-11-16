@@ -114,13 +114,13 @@ class TelegramBotController
       return Rsp.success(rsp)
     }
 
-//    @Get("/getWebhookInfo")
-//    @Secured(value = [SecurityRules.IS_ANONYMOUS])
-//    fun getWebhookInfo(): Rsp<TelegramRsp<GetWebhookInfo>> {
-//        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
-//        val rsp=  telegramAPI.getWebhookInfo(httpApiToken)
-//        return Rsp.success(rsp)
-//    }
+    @Get("/getWebhookInfo")
+    @Secured(value = [SecurityRules.IS_ANONYMOUS])
+    fun getWebhookInfo(): Rsp<TelegramRsp<GetWebhookInfo>> {
+        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
+        val rsp=  telegramAPI.getWebhookInfo(httpApiToken)
+        return Rsp.success(rsp)
+    }
 
 
 
