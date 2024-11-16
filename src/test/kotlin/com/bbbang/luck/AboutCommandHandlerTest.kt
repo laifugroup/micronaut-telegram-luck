@@ -1,5 +1,6 @@
 package com.bbbang.luck
 
+import com.bbbang.luck.api.bot.handler.command.AboutCommandHandler
 import io.micronaut.chatbots.core.Dispatcher
 import io.micronaut.chatbots.telegram.api.Update
 import io.micronaut.chatbots.telegram.api.send.Send

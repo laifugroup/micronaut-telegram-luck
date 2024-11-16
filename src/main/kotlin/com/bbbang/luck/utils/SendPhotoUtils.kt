@@ -43,7 +43,7 @@ class SendPhotoUtils {
                 message.chatId = space!!.id
                 message.caption=caption
                 message.replyMarkup=inlineKeyboard
-                message.parseMode = parseMode?.toString()
+                message.parseMode = parseMode.toString()
                 return message
             }
 

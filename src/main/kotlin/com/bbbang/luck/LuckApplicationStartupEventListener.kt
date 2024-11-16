@@ -21,14 +21,18 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
     lateinit var objectMapper: ObjectMapper
 
     override fun onApplicationEvent(event: ServerStartupEvent?) {
+        //registerLicense()
+       registerTelegram()
+    }
+
+    private fun registerLicense(){
         //开源版本屏蔽证书验证
         try {
-            LicenseHelper.verifyLicenseStartUp()
+            //LicenseHelper.verifyLicenseStartUp()
         }catch (e:Exception){
             println("[证书]许可已到期或不正确,请向服务商获取新证书。")
             exitProcess(-1)
         }
-       // registerTelegram()
     }
     private fun registerTelegram(){
         try{
@@ -47,9 +51,6 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
             val secretToken="zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
             val joinAllowedUpdates=objectMapper.writeValueAsString(allowedUpdates)
             val register=  telegramBotAPI.setWebhook(httpApiToken,webhookUrl,secretToken,joinAllowedUpdates)
-//            if (register.ok){
-//                println("webhook register success")
-//            }
             println(register.description)
         }catch (e:Exception){
             e.printStackTrace()

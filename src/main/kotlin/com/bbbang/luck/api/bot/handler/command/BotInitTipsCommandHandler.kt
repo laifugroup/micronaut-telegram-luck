@@ -26,10 +26,10 @@ open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage> {
-        if (input?.message?.from?.bot==true){
+        if (input.message?.from?.bot==true){
             return Optional.empty()
         }
-        val groupInitTips = messageSource.getMessage("group.init.tips", LocaleHelper.language(input),input?.message?.chat?.id,input?.message?.from?.id)
+        val groupInitTips = messageSource.getMessage("group.init.tips", LocaleHelper.language(input),input.message?.chat?.id,input.message?.from?.id)
             .orElse(LocaleHelper.EMPTY)
         return SendMessageUtils.compose(spaceParser, input, groupInitTips)
     }

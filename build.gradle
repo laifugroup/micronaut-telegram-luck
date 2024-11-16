@@ -1,21 +1,22 @@
-//buildscript {
-//    repositories {
-//        println "aliyun repositories"
-//        maven { url 'https://maven.aliyun.com/repository/google' }
-//        maven { url 'https://maven.aliyun.com/repository/central' }
-//        maven { url 'https://maven.aliyun.com/repository/public' }
-//    }
-//
-//    allprojects {
-//        println "aliyun allprojects ${project.name}"
-//        repositories {
-//            maven { url 'https://maven.aliyun.com/repository/google' }
-//            maven { url 'https://maven.aliyun.com/repository/central' }
-//            maven { url 'https://maven.aliyun.com/repository/public' }
-//        }
-//    }
-//}
+buildscript {
+    repositories {
+        println "aliyun repositories"
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
 
+    allprojects {
+        println "aliyun allprojects ${project.name}"
+        repositories {
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            maven { url 'https://maven.aliyun.com/repository/central' }
+            maven { url 'https://maven.aliyun.com/repository/public' }
+            mavenCentral()
+        }
+    }
+}
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
     id("org.jetbrains.kotlin.kapt") version "1.9.25"
@@ -32,10 +33,13 @@ group = "com.bbbang.luck"
 
 repositories {
     mavenLocal()
-   // maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/central'}
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin'}
+    maven { url 'https://maven.aliyun.com/repository/apache-snapshots'}
     mavenCentral()
 }
-
 
 dependencies {
     kapt("io.micronaut.data:micronaut-data-processor")
@@ -53,12 +57,12 @@ dependencies {
     //mapstruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     //license
-    shadow ("com.bbbang.parent:platform-license-library-keymgr:${licenseVersion}", {
+    implementation ("com.bbbang.parent:platform-license-library-keymgr:${licenseVersion}", {
 //        exclude group: 'org.slf4j', module: 'slf4j-api'
 //        exclude group: 'org.slf4j', module: 'slf4j-simple'
 //        exclude group: 'org.slf4j', module: 'slf4j-nop'
     })
-    shadow ("global.namespace.truelicense:truelicense:4.0.3")
+    implementation ("global.namespace.truelicense:truelicense:4.0.3")
     implementation("com.bbbang.parent:parent-virtual:2.0.0")
 
 

@@ -109,17 +109,18 @@ class TelegramBotController
         val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
         val webhookUrl="https://106f-2409-8a62-f11-d5b0-8c54-86e-9e23-4dbe.ngrok-free.app/telegramBot/callback"
         val secretToken="zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
+        //error set
         val rsp=  telegramAPI.setWebhook(httpApiToken,webhookUrl,secretToken,allowedUpdates.joinToString(","))
       return Rsp.success(rsp)
     }
 
-    @Get("/getWebhookInfo")
-    @Secured(value = [SecurityRules.IS_ANONYMOUS])
-    fun getWebhookInfo(): Rsp<TelegramRsp<GetWebhookInfo>> {
-        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
-        val rsp=  telegramAPI.getWebhookInfo(httpApiToken)
-        return Rsp.success(rsp)
-    }
+//    @Get("/getWebhookInfo")
+//    @Secured(value = [SecurityRules.IS_ANONYMOUS])
+//    fun getWebhookInfo(): Rsp<TelegramRsp<GetWebhookInfo>> {
+//        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
+//        val rsp=  telegramAPI.getWebhookInfo(httpApiToken)
+//        return Rsp.success(rsp)
+//    }
 
 
 

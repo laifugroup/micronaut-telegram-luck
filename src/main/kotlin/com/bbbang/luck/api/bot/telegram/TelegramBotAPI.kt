@@ -28,10 +28,10 @@ interface TelegramBotAPI {
                    ,@QueryValue("allowed_updates")allowedUpdates:String)
     : TelegramRsp<Boolean>
 
-    @Post("/bot{httpApiToken}/getWebhookInfo")
-    @SingleResult
-    fun getWebhookInfo(@PathVariable("httpApiToken")httpApiToken:String)
-            : TelegramRsp<GetWebhookInfo>
+//    @Post("/bot{httpApiToken}/getWebhookInfo")
+//    @SingleResult
+//    fun getWebhookInfo(@PathVariable("httpApiToken")httpApiToken:String)
+//    : TelegramRsp<GetWebhookInfo>
 
 
 
