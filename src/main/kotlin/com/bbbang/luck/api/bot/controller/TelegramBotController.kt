@@ -26,6 +26,7 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.security.annotation.Secured
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -78,6 +79,7 @@ class TelegramBotController
             ),
         ]
     )
+    @Hidden
     @Post("/callback")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun callback(

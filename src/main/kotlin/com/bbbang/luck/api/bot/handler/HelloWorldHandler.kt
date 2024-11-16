@@ -14,11 +14,11 @@ import java.util.*
 class HelloWorldHandler(private val spaceParser: SpaceParser<Update, Chat>) : TelegramHandler<SendMessage> {
 
     companion object{
-        const val HELLO_COMMAND = "hello"
+        const val HELLO = "hello"
     }
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean = input.message.text.matches(
-        HELLO_COMMAND.toRegex())
+        HELLO.toRegex())
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage> =
         SendMessageUtils.compose(spaceParser, input, "Hello World")

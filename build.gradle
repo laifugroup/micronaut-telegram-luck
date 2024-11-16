@@ -64,6 +64,8 @@ dependencies {
     })
     implementation ("global.namespace.truelicense:truelicense:4.0.3")
     implementation("com.bbbang.parent:parent-virtual:2.0.0")
+    //内存队列
+    implementation ("com.lmax:disruptor:3.4.2")
 
 
     implementation("io.micronaut:micronaut-aop")

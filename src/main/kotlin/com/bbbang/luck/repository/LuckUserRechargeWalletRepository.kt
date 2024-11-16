@@ -1,5 +1,5 @@
 package com.bbbang.luck.repository;
-import com.bbbang.luck.domain.po.LuckPlatformPO
+import com.bbbang.luck.domain.po.LuckUserRechargeWalletPO
 import com.bbbang.parent.repository.BaseReactorPageableRepository
 import com.bbbang.parent.repository2.BasePageableRepository2
 import io.micronaut.core.annotation.NonNull
@@ -15,10 +15,9 @@ import reactor.core.publisher.Mono
 
 @Repository
 @RepositoryConfiguration(queryBuilder = JpaQueryBuilder::class)
-interface LuckPlatformRepository: BasePageableRepository2<LuckPlatformPO>   {
+interface LuckUserRechargeWalletRepository: BasePageableRepository2<LuckUserRechargeWalletPO>   {
 
-   fun findByGroupId( groupId:Long?): LuckPlatformPO
-
+   fun findByUserId(userId:Long?): LuckUserRechargeWalletPO
 
 }
 
