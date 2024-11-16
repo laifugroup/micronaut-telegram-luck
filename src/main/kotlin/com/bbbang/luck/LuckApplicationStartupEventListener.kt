@@ -21,7 +21,7 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
     lateinit var objectMapper: ObjectMapper
 
     override fun onApplicationEvent(event: ServerStartupEvent?) {
-        registerLicense()
+        //registerLicense()
        registerTelegram()
     }
 
