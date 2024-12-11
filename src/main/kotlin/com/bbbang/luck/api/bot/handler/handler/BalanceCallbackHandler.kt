@@ -11,13 +11,13 @@ import jakarta.inject.Singleton
 import java.util.Optional
 
 @Singleton
-open class BalanceCommandHandler(private val spaceParser: SpaceParser<Update, Chat>) : TelegramHandler<AnswerCallbackQuery> {
+open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, Chat>) : TelegramHandler<AnswerCallbackQuery> {
     companion object{
         const val BALANCE = "(?i)(ye|余额|查|yue)"
     }
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
-       println("------------------:BalanceCallbackHandler1")
+       println("------------------:BalanceCallbackHandler")
         val match=  input.callbackQuery?.data?.matches(BALANCE.toRegex())
         val m= match!=null && match
         return m
