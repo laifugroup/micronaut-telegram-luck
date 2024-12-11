@@ -14,13 +14,16 @@ import java.util.Optional
 @Singleton
 open class FinalCommandHandler(private val spaceParser: SpaceParser<Update, Chat>) : TelegramHandler<SendMessage> {
 
-    override fun canHandle(bot: TelegramBotConfiguration?, input: Update) = true
+    override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
+        println("------------------:FinalCommandHandler")
+        return true
+    }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage> =
         SendMessageUtils.compose(
             spaceParser,
             input,
-            "I don't how to handle your query: ${input.message.text}"
+            "I don't how to handle your query: ${input.message?.text}"
         )
 
     override fun getOrder() = Ordered.LOWEST_PRECEDENCE

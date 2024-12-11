@@ -74,7 +74,7 @@ class TelegramBotController
             Parameter(
                 name = "X-Real-Ip",
                 `in` = ParameterIn.HEADER,
-                example = "127.0.3",
+                example = "127.0.1",
                 required = true
             ),
         ]
@@ -86,6 +86,7 @@ class TelegramBotController
         @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String?,
         @Body update: Update
     ): HttpResponse<Send> {
+        LOG.info("------------------:callback")
         val botOptional = tokenValidator.validate(apiSecretToken)
         if (botOptional.isEmpty) {
             LOG.trace("无效token:${apiSecretToken}")

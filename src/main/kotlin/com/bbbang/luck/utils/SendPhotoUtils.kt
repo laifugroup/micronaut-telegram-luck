@@ -37,7 +37,7 @@ class SendPhotoUtils {
                 caption:@NonNull String,
                 inlineKeyboard:String,
                 parseMode: @Nullable ParseMode
-            ): @NonNull SendPhoto? {
+            ): @NonNull SendPhoto {
                 val message = SendPhoto()
                 message.photo=photo
                 message.chatId = space!!.id

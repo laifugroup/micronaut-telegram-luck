@@ -3,7 +3,7 @@
 ````
 
 
-ngrok config add-authtoken 3i5oi8hfYa1V13uj3NpoA_5W3vS2i9SjPL5zcWT1Q9V
+./ngrok.exe config add-authtoken 3i5oi8hfYa1V13uj3NpoA_5W3vS2i9SjPL5zcWT1Q9V
 
 
 ./ngrok.exe http http://localhost:1960

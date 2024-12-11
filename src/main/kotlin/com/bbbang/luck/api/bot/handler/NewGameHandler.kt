@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler
 
+import com.bbbang.luck.api.bot.handler.HelloWorldHandler.Companion.HELLO
 import com.bbbang.luck.utils.SendPhotoUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.chatbots.core.SpaceParser
@@ -22,32 +23,74 @@ class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
         const val NEW_GAME_COMMAND = "newGame"
     }
 
-    override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean = input.message.text.matches(
-        NEW_GAME_COMMAND.toRegex())
+    override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
+        println("------------------:NewGameHandler")
+        val match=  input.message?.text?.matches(NEW_GAME_COMMAND.toRegex())
+        return match!=null && match
+    }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendPhoto>{
         val photo="https://raw.githubusercontent.com/laifugroup/luck-vertx/refs/heads/master/src/main/resources/views/img/luck_boom.jpg"
-        val caption="砍一刀🧧"
+        val caption="[luck]发了100U的红包，快来抢🧧"
         val keyboard= InlineKeyboardMarkup()
         keyboard.inlineKeyboard= listOf(
             listOf(
                 InlineKeyboardButton().apply {
-                    text="砍一刀[1/6]"
-                    callbackData="battle"
+                    text="🧧抢红包[1/6]总$100U雷3"
+                    callbackData="yue"
                     //url=""
                 }
             ),
             listOf(
                 InlineKeyboardButton().apply {
-                    text="查询"
+                    text="提现"
                     callbackData="query"
                     //url=""
                 },
                 InlineKeyboardButton().apply {
-                    text="余额"
+                    text="充值"
                     callbackData="balance"
                     url="https://baidu.com"
+                },
+                InlineKeyboardButton().apply {
+                    text="玩法"
+                    callbackData="balance"
+                },
+                InlineKeyboardButton().apply {
+                    text="余额"
+                    callbackData="balance"
                 }
+            ),
+            listOf(
+                InlineKeyboardButton().apply {
+                    text="推广链接"
+                    callbackData="query"
+                    //url=""
+                },
+                InlineKeyboardButton().apply {
+                    text="推广查询"
+                    callbackData="balance"
+                },
+                InlineKeyboardButton().apply {
+                    text="返水统计"
+                    callbackData="balance"
+                },
+                InlineKeyboardButton().apply {
+                    text="游戏报表"
+                    callbackData="balance"
+                }
+            ),
+            listOf(
+                InlineKeyboardButton().apply {
+                    text="财务"
+                    callbackData="query"
+                    //url=""
+                },
+                InlineKeyboardButton().apply {
+                    text="客服"
+                    callbackData="balance"
+                },
+
             )
         )
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)

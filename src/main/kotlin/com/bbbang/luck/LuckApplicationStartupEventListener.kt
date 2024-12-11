@@ -44,9 +44,9 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
             )
 
             // ["chat_member","message","edited_message","callback_query"]
-
+    //     https://ed29-182-139-189-174.ngrok-free.app
             val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
-            val host="https://7290-2409-8a63-f11-48d0-493a-fbc9-1572-678a.ngrok-free.app"
+            val host="https://ed29-182-139-189-174.ngrok-free.app"
             val webhookUrl="$host/telegramBot/callback"
             val secretToken="zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
             val joinAllowedUpdates=objectMapper.writeValueAsString(allowedUpdates)

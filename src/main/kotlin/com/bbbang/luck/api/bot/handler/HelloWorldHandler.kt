@@ -17,8 +17,11 @@ class HelloWorldHandler(private val spaceParser: SpaceParser<Update, Chat>) : Te
         const val HELLO = "hello"
     }
 
-    override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean = input.message.text.matches(
-        HELLO.toRegex())
+    override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
+        println("------------------:HelloWorldHandler")
+        val match=  input.message?.text?.matches(HELLO.toRegex())
+        return match!=null && match
+    }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage> =
         SendMessageUtils.compose(spaceParser, input, "Hello World")

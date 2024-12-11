@@ -8,13 +8,11 @@ import com.bbbang.luck.domain.po.LuckInviteLogPO
 import com.bbbang.luck.domain.vo.UserInviteStatisticsVO
 import com.bbbang.luck.mapper.LuckInviteLogMapper
 import com.bbbang.luck.repository.LuckInviteLogRepository
-import com.bbbang.parent.service.impl.BaseServiceImpl
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import io.micronaut.data.model.Page
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
 import jakarta.inject.Singleton
-import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 
@@ -40,15 +38,11 @@ open class LuckInviteLogService(private val repository: LuckInviteLogRepository)
         val totalMono=repository.countByUserId(userId)
         val top10Mono = getTop10(userId)
 
-         val countToday =countTodayMono
-         val countMonth = countMonthMono
-         val total = totalMono
-         val top10=top10Mono
-         return   UserInviteStatisticsVO(
-             currentDay = countToday,
-             currentMonth = countMonth,
-             total = total,
-             inviteLogList = LuckInviteLogMapper.MAPPER.po2vo(top10.content)
+         return UserInviteStatisticsVO(
+             currentDay = countTodayMono,
+             currentMonth = countMonthMono,
+             total = totalMono,
+             inviteLogList = LuckInviteLogMapper.MAPPER.po2vo(top10Mono.content)
          )
 
     }

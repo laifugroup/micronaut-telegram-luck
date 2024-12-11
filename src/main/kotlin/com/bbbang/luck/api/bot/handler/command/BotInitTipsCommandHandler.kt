@@ -22,6 +22,7 @@ open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update
 
     //检查是否初始化bot
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
+        println("------------------:BalanceHandler")
         return false
     }
 
