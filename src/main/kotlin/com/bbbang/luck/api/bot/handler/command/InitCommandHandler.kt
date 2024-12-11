@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.command
 
+import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.core.TextResourceLoader
@@ -49,7 +50,9 @@ open class InitCommandHandler(
 
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update?): Boolean {
-        println("------------------:BalanceHandler")
+        println("------------------:InitCommandHandler")
         return super.canHandle(bot, input)
     }
+
+    override fun getOrder() = Ordered.INIT
 }

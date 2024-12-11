@@ -40,7 +40,7 @@ open class StartCommandHandler(
 
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update?): Boolean {
-        println("------------------:BalanceHandler")
+        println("------------------:StartCommandHandler")
         return super.canHandle(bot, input)
     }
 }

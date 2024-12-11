@@ -93,8 +93,12 @@ class TelegramBotController
             return HttpResponse.unauthorized()
         }
         return dispatcher.dispatch(botOptional.get(), update)
-            .map<MutableHttpResponse<Send>> { body: Send? -> HttpResponse.ok(body) }
-            .orElseGet { HttpResponse.ok() }
+            .map<MutableHttpResponse<Send>> {
+                body: Send? -> HttpResponse.ok(body)
+            }
+            .orElseGet {
+                HttpResponse.ok()
+            }
     }
 
 

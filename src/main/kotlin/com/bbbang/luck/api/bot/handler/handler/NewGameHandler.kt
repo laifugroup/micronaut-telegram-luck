@@ -1,6 +1,5 @@
-package com.bbbang.luck.api.bot.handler
+package com.bbbang.luck.api.bot.handler.handler
 
-import com.bbbang.luck.api.bot.handler.HelloWorldHandler.Companion.HELLO
 import com.bbbang.luck.utils.SendPhotoUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.chatbots.core.SpaceParser

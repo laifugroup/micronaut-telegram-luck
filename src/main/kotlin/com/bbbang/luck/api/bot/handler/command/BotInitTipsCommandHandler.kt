@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.command
 
+import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
@@ -9,7 +10,6 @@ import io.micronaut.chatbots.telegram.core.SendMessageUtils
 import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
-import io.micronaut.core.order.Ordered
 import jakarta.inject.Singleton
 import java.util.Optional
 
@@ -22,7 +22,7 @@ open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update
 
     //检查是否初始化bot
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
-        println("------------------:BalanceHandler")
+        println("------------------:BotInitTipsCommandHandler")
         return false
     }
 
@@ -37,5 +37,5 @@ open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update
 
 
 
-    override fun getOrder() = Ordered.HIGHEST_PRECEDENCE
+    override fun getOrder() = Ordered.INIT_PRE_VERIFY
 }
