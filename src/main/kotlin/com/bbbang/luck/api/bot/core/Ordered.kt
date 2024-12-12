@@ -9,7 +9,7 @@ interface Ordered {
 
         const  val   NEW_GAME : Int =5
 
-        const  val   HELLO : Int =6
+        const  val   INVITE_LINK : Int =6
 
         const  val   ABOUT : Int =7
 

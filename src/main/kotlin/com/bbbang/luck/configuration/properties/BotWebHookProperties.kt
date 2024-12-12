@@ -9,6 +9,7 @@ class BotWebHookProperties: BotWebHookConfiguration {
     override lateinit var internalUrl: String
     override lateinit var url: String
     override lateinit var secretToken: String
+    override lateinit var httpApiToken: String
 
 }
 

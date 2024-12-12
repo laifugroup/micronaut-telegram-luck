@@ -2,6 +2,7 @@ package com.bbbang.luck.api.bot.telegram
 
 import com.bbbang.luck.api.bot.http.entity.GetWebhookInfo
 import com.bbbang.luck.api.bot.http.entity.TelegramRsp
+import io.micronaut.chatbots.telegram.api.ChatInviteLink
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
@@ -31,6 +32,13 @@ interface TelegramBotAPI {
     @SingleResult
     fun getWebhookInfo(@PathVariable("httpApiToken")httpApiToken:String)
     : TelegramRsp<GetWebhookInfo>
+
+    @Post("/bot{httpApiToken}/createChatInviteLink")
+    @SingleResult
+    fun createChatInviteLink(@PathVariable("httpApiToken")httpApiToken:String,
+        @QueryValue createChatInviteLink:CreateChatInviteLink
+    )
+    : TelegramRsp<ChatInviteLink>
 
 
 

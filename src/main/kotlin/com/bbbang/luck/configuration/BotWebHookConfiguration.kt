@@ -14,5 +14,10 @@ package com.bbbang.luck.configuration
      */
     val secretToken:String
 
+     /**
+      * http api token
+      */
+    val httpApiToken:String
+
 
 }

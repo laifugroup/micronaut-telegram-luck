@@ -4,6 +4,7 @@ import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
 import com.bbbang.luck.api.bot.http.entity.GetWebhookInfo
 import com.bbbang.luck.api.bot.http.entity.TelegramRsp
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
+import com.bbbang.luck.configuration.properties.BotWebHookProperties
 import com.bbbang.parent.entities.Rsp
 import com.bbbang.parent.rule.SecurityRules
 import io.micronaut.chatbots.core.Dispatcher
@@ -53,7 +54,8 @@ class TelegramBotController
 
     (private val tokenValidator: TokenValidator,
      private val dispatcher: Dispatcher<TelegramBotConfiguration, Update, Send>,
-     private val telegramAPI: TelegramBotAPI
+     private val telegramAPI: TelegramBotAPI,
+     private val botWebHookProperties: BotWebHookProperties
 ) {
 
     /**
@@ -89,7 +91,7 @@ class TelegramBotController
         LOG.info("---begin callback")
         val botOptional = tokenValidator.validate(apiSecretToken)
         if (botOptional.isEmpty) {
-            LOG.trace("无效token:${apiSecretToken}")
+            LOG.info("无效token:${apiSecretToken}")
             return HttpResponse.unauthorized()
         }
         return dispatcher.dispatch(botOptional.get(), update)
@@ -112,10 +114,9 @@ class TelegramBotController
             , AllowedUpdatesType.EDITED_MESSAGE.code
             , AllowedUpdatesType.CALLBACK_QUERY.code
         )
-
-        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
-        val webhookUrl="https://106f-2409-8a62-f11-d5b0-8c54-86e-9e23-4dbe.ngrok-free.app/telegramBot/callback"
-        val secretToken="zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
+        val httpApiToken=botWebHookProperties.httpApiToken
+        val webhookUrl=botWebHookProperties.url
+        val secretToken=botWebHookProperties.secretToken
         //error set
         val rsp=  telegramAPI.setWebhook(httpApiToken,webhookUrl,secretToken,allowedUpdates.joinToString(","))
       return Rsp.success(rsp)
@@ -124,7 +125,7 @@ class TelegramBotController
     @Get("/getWebhookInfo")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun getWebhookInfo(): Rsp<TelegramRsp<GetWebhookInfo>> {
-        val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
+        val httpApiToken=botWebHookProperties.httpApiToken
         val rsp=  telegramAPI.getWebhookInfo(httpApiToken)
         return Rsp.success(rsp)
     }

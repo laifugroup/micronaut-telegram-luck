@@ -3,6 +3,7 @@ package com.bbbang.luck
 
 import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
+import com.bbbang.luck.configuration.properties.BotWebHookProperties
 import com.bbbang.parent.helper.LicenseHelper
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.context.event.ApplicationEventListener
@@ -19,6 +20,9 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
 
     @Inject
     lateinit var objectMapper: ObjectMapper
+    @Inject
+    lateinit var botWebHookProperties: BotWebHookProperties
+
 
     override fun onApplicationEvent(event: ServerStartupEvent?) {
         //registerLicense()
@@ -44,11 +48,10 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
             )
 
             // ["chat_member","message","edited_message","callback_query"]
-    //     https://ed29-182-139-189-174.ngrok-free.app
-            val httpApiToken="6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU"
-            val host="https://31f7-182-139-189-174.ngrok-free.app"
-            val webhookUrl="$host/telegramBot/callback"
-            val secretToken="zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
+            val httpApiToken=botWebHookProperties.httpApiToken
+            val webhookUrl=botWebHookProperties.url
+            val secretToken=botWebHookProperties.secretToken
+            println("webhookUrl=$webhookUrl")
             val joinAllowedUpdates=objectMapper.writeValueAsString(allowedUpdates)
             val register=  telegramBotAPI.setWebhook(httpApiToken,webhookUrl,secretToken,joinAllowedUpdates)
             println(register.description)
