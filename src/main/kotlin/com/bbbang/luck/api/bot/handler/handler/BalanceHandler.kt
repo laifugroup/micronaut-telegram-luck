@@ -26,20 +26,18 @@ open class BalanceHandler(private val spaceParser: SpaceParser<Update, Chat>
     ) : TelegramHandler<SendMessage> {
 
     companion object{
-        const val BALANCE = BalanceCallbackHandler.BALANCE
+        const val BALANCE = "(?i)(ye|余额|查|yue)"
     }
 
     override fun getOrder() = Ordered.BALANCE
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
-       println("------------------:BalanceHandler")
         val match=  input.message?.text?.matches(BALANCE.toRegex())
-        val m= match!=null && match
-        return m
+        return  match!=null && match
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage>{
-       val wallet= luckWalletService.findWalletByUserId(input.message.from.id,input.message.chat.id)
+       val wallet= luckWalletService.findWalletByUserId(input.message?.from?.id,input.message?.chat?.id)
         val credit= wallet.credit
         val userId=wallet.userId
         val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)

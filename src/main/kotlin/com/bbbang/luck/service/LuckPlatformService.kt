@@ -20,7 +20,12 @@ open class LuckPlatformService(private val repository: LuckPlatformRepository)
 :BaseServiceImpl2<LuckPlatformDTO, LuckPlatformPageDTO, LuckPlatformBO, LuckPlatformPO, LuckPlatformVO>(repository, LuckPlatformMapper.MAPPER){
 
 
-    fun findByGroupId(groupId:Long?): LuckPlatformVO {
-        return  LuckPlatformMapper.MAPPER.po2vo(repository.findByGroupId(groupId))
+    fun findByGroupId(groupId:Long?): LuckPlatformVO? {
+        val po=repository.findByGroupId(groupId)
+        return if (po!=null) {
+            LuckPlatformMapper.MAPPER.po2vo(po)
+        }else{
+            null
+        }
     }
 }

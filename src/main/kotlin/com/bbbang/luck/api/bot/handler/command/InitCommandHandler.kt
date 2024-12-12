@@ -1,6 +1,7 @@
 package com.bbbang.luck.api.bot.handler.command
 
 import com.bbbang.luck.api.bot.core.Ordered
+import com.bbbang.luck.service.wrapper.LuckPlatformServiceWrapper
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.core.TextResourceLoader
@@ -21,6 +22,7 @@ open class InitCommandHandler(
     private val textResourceLoader: TextResourceLoader,
     private val spaceParser: SpaceParser<Update, Chat>,
     private val messageSource: MessageSource,
+    private val platformServiceWrapper: LuckPlatformServiceWrapper
 ) : CommandHandler(slashCommandParser, textResourceLoader, spaceParser) {
 
     override fun getCommand() = COMMAND_INIT
@@ -32,20 +34,35 @@ open class InitCommandHandler(
     override fun getOrder() = Ordered.INIT
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update?): Optional<SendMessage> {
-        if (input?.message?.from?.bot==true){
+        if (input?.message?.from?.bot == true) {
             return Optional.empty()
         }
 
         //不允许私聊中执行指令
-        if (input?.message?.from?.id==input?.message?.chat?.id){
-            val privateChatCommandMessage = messageSource.getMessage("private.chat.bot.command", LocaleHelper.language(input))
-                .orElse(LocaleHelper.EMPTY)
+        if (input?.message?.from?.id == input?.message?.chat?.id) {
+            val privateChatCommandMessage =
+                messageSource.getMessage("private.chat.bot.command", LocaleHelper.language(input))
+                    .orElse(LocaleHelper.EMPTY)
             return SendMessageUtils.compose(spaceParser, input, privateChatCommandMessage)
         }
+        val platform = platformServiceWrapper.findByGroupId(input?.message?.chat?.id)
+        if (platform!=null) {
+            val groupInitMessage = messageSource.getMessage(
+                "group.init.already",
+                LocaleHelper.language(input),
+                platform.groupId,
+                platform.adminBotUserId
+            ).orElse(LocaleHelper.EMPTY)
+            return SendMessageUtils.compose(spaceParser, input, groupInitMessage)
+        }
+        val savePlatform=  platformServiceWrapper.saveGroupId2(input?.message?.from, input?.message?.chat?.id,input?.message?.chat?.title)
 
-
-        val groupInitMessage = messageSource.getMessage("group.init.message", LocaleHelper.language(input),input?.message?.chat?.id,input?.message?.from?.id)
-            .orElse(LocaleHelper.EMPTY)
+        val groupInitMessage = messageSource.getMessage(
+            "group.init.congratulations",
+            LocaleHelper.language(input),
+            savePlatform?.groupId,
+            savePlatform?.adminBotUserId
+        ).orElse(LocaleHelper.EMPTY)
         return SendMessageUtils.compose(spaceParser, input, groupInitMessage)
     }
 

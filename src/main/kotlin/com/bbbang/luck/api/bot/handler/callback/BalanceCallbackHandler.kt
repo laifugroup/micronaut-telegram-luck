@@ -21,7 +21,7 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
     ) : TelegramHandler<AnswerCallbackQuery> {
 
     companion object{
-        const val BALANCE = "(?i)(ye|余额|查|yue)"
+        const val BALANCE = "balance"
     }
 
     override fun getOrder() = Ordered.BALANCE

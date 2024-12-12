@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono
 @RepositoryConfiguration(queryBuilder = JpaQueryBuilder::class)
 interface LuckPlatformRepository: BasePageableRepository2<LuckPlatformPO>   {
 
-   fun findByGroupId( groupId:Long?): LuckPlatformPO
+   fun findByGroupId( groupId:Long?): LuckPlatformPO?
 
 
 }

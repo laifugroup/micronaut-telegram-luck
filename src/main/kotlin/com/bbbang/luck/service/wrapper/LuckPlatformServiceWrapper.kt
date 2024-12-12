@@ -22,24 +22,24 @@ import reactor.core.publisher.Mono
 @Singleton
 open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatformService) {
 
-    fun findByGroupId(update: Update?): LuckPlatformVO {
+    fun findByGroupId(update: Update?): LuckPlatformVO? {
         return this.findByGroupId(update?.message?.chat?.id)
     }
 
     @Cacheable("#groupId")
-    open fun findByGroupId(groupId: Long?): LuckPlatformVO {
+    open fun findByGroupId(groupId: Long?): LuckPlatformVO? {
        val result= luckPlatformService.findByGroupId(groupId)
-         if (result.id==null){
-             BusinessException("未查询到数据")
-         }
+//         if (result?.id==null){
+//             throw BusinessException("未查询到数据")
+//         }
         return result
     }
 
     @CachePut("#groupId")
-    open fun saveGroupId(botUser: User?,groupId: Long?): LuckPlatformVO {
+    open fun saveGroupId(botUser: User?,groupId: Long?,groupName:String?=null): LuckPlatformVO? {
         val platform= luckPlatformService.findByGroupId(groupId)
-        val result=if(platform.id==null){
-            luckPlatformService.save(LuckPlatformBO(groupId=groupId, adminBotUserId = botUser?.id, status = PlatformStatus.ENABLE.code))
+        val result=if(platform?.id==null){
+            luckPlatformService.save(LuckPlatformBO(groupId=groupId,groupName = groupName, adminBotUserId = botUser?.id, status = PlatformStatus.ENABLE.code))
         }else{
             platform
         }
@@ -48,7 +48,10 @@ open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatf
 
 
 
-
+    @CachePut("#groupId")
+    open fun saveGroupId2(botUser: User?,groupId: Long?,groupName:String?=null): LuckPlatformVO? {
+        return   luckPlatformService.save(LuckPlatformBO(groupId=groupId,groupName = groupName, adminBotUserId = botUser?.id, status = PlatformStatus.ENABLE.code))
+    }
 
 
 }

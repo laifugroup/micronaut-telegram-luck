@@ -1,6 +1,9 @@
 package com.bbbang.luck.api.bot.handler.command
 
 import com.bbbang.luck.api.bot.core.Ordered
+import com.bbbang.luck.service.wrapper.LuckPlatformServiceWrapper
+import com.bbbang.luck.service.wrapper.LuckUserServiceWrapper
+import com.bbbang.luck.utils.ChatHelper
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
@@ -18,14 +21,17 @@ import java.util.Optional
  */
 @Singleton
 open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update, Chat>,
-                                     private val messageSource:MessageSource) : TelegramHandler<SendMessage> {
+                                     private val messageSource:MessageSource,
+                                     private val platformServiceWrapper: LuckPlatformServiceWrapper) : TelegramHandler<SendMessage> {
 
     override fun getOrder() = Ordered.INIT_PRE_VERIFY
 
     //检查是否初始化bot
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
         println("------------------:BotInitTipsCommandHandler")
-        return false
+        val platform=platformServiceWrapper.findByGroupId(ChatHelper.getChatId(input))
+        val eq= platform == null
+        return eq
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage> {
