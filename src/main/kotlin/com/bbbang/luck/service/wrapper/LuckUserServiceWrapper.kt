@@ -7,6 +7,7 @@ import com.bbbang.luck.domain.po.LuckUserPO
 import com.bbbang.luck.domain.type.LuckUserRoleType
 import com.bbbang.luck.domain.vo.LuckUserVO
 import com.bbbang.luck.helper.SassIdHelper
+import com.bbbang.luck.mapper.LuckUserMapper
 import com.bbbang.luck.repository.LuckUserRepository
 import com.bbbang.luck.service.LuckUserService
 import com.bbbang.parent.exception.BusinessException
@@ -30,9 +31,9 @@ open class LuckUserServiceWrapper(private val luckUserService: LuckUserService,
     }
 
 
-    fun findByBotUser(update: Update): LuckUserVO? {
-        val botUser = update.message.from
-        val chat = update.message.chat
+    fun findByBotUser(update: Update?): LuckUserVO? {
+        val botUser = update?.message?.from
+        val chat = update?.message?.chat
         return this.findByBotUser(botUser, chat)
     }
 
@@ -48,7 +49,7 @@ open class LuckUserServiceWrapper(private val luckUserService: LuckUserService,
     }
 
 
-    @CachePut("#sassId")
+    @CachePut(value = ["users"], parameters = ["sassId"])
     open fun updateRolesById(userId: Long?, sassId: String?, roles: String?): Int? {
         if (sassId != null) {
             return luckUserRepository.updateRolesById(userId, roles)
@@ -56,10 +57,30 @@ open class LuckUserServiceWrapper(private val luckUserService: LuckUserService,
         return null
     }
 
+    @CachePut(value = ["users"], parameters = ["sassId"])
+    open fun saveUser(update: Update?, sassId: String?): LuckUserVO? {
+        println("saveUser:$sassId")
+
+        if (sassId != null) {
+            val save= luckUserRepository.save(LuckUserPO().apply {
+                this.botUserId = update?.message?.from?.id
+                this.groupId=update?.message?.chat?.id
+                this.roles = LuckUserRoleType.USER.code
+                this.firstName = update?.message?.from?.firstName
+                this.lastName = update?.message?.from?.lastName
+                this.userName = update?.message?.from?.username
+                this.status = LuckUserType.ENABLE.code
+                this.inviterUserId=update?.message?.replyToMessage?.from?.id
+            })
+            return  LuckUserMapper.MAPPER.po2vo(save)
+        }
+        return null
+    }
+
     /**
      * 这里更新邀请人信息，一般不影响查询
      */
-    @CachePut("#sassId")
+    @CachePut(value = ["users"], parameters = ["sassId"])
     open fun updateInviterUserIdById(userId: Long?, sassId: String?, inviterUserId: Long?): Int? {
         if (sassId == null) {
             return null
@@ -67,10 +88,12 @@ open class LuckUserServiceWrapper(private val luckUserService: LuckUserService,
         return luckUserRepository.updateInviterUserIdById(userId, inviterUserId)
     }
 
-    @Cacheable("#sassId")
+    //@Cacheable("#sassId")
+    @Cacheable(value = ["users"], parameters = ["sassId"])
     open fun findByBotUser(botUser: User?, sassId: String, groupId: Long?, chatType: String?): LuckUserVO? {
+        println("----findByBotUser:$sassId")
         val user = luckUserService.findByBotUserId(botUser?.id!!, groupId)
-        val luckUser = if (user.id == null) {
+        val luckUser = if (user?.id == null) {
             luckUserService.save(LuckUserBO().apply {
                 this.botUserId = botUser.id
                 this.groupId = groupId
@@ -84,14 +107,14 @@ open class LuckUserServiceWrapper(private val luckUserService: LuckUserService,
             user
         }
         if (luckUser.status == LuckUserType.DISABLE.code) {
-            throw BusinessException("用户[${user.firstName}]已经被禁用")
+            throw BusinessException("用户[${luckUser.firstName}]已经被禁用")
         }
-        return if (user.groupId == null && BotMessageType.SUPERGROUP.code == chatType) {
-            luckUserService.update(user.id!!, LuckUserBO().apply {
+        return if (luckUser.groupId == null && BotMessageType.SUPERGROUP.code == chatType) {
+            luckUserService.update(luckUser.id!!, LuckUserBO().apply {
                 this.groupId = groupId
             })
         } else {
-            user
+            luckUser
         }
 }
 

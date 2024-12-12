@@ -22,8 +22,13 @@ import java.time.LocalTime
 open class LuckUserService(private val repository: LuckUserRepository) 
 :BaseServiceImpl2<LuckUserDTO, LuckUserPageDTO, LuckUserBO, LuckUserPO, LuckUserVO>(repository, LuckUserMapper.MAPPER){
 
-    fun findByBotUserId(botUserId: Long,groupId:Long?): LuckUserVO {
-        return  LuckUserMapper.MAPPER.po2vo(repository.findByBotUserIdAndGroupId(botUserId,groupId!!))
+    fun findByBotUserId(botUserId: Long,groupId:Long?): LuckUserVO? {
+       val user= repository.findByBotUserIdAndGroupId(botUserId,groupId!!)
+        return if (user!=null){
+            LuckUserMapper.MAPPER.po2vo(user)
+        }else{
+            null
+        }
     }
 
 

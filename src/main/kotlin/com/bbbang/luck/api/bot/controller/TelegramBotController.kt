@@ -86,7 +86,7 @@ class TelegramBotController
         @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String?,
         @Body update: Update
     ): HttpResponse<Send> {
-        LOG.info("------------------:callback")
+        LOG.info("---begin callback")
         val botOptional = tokenValidator.validate(apiSecretToken)
         if (botOptional.isEmpty) {
             LOG.trace("无效token:${apiSecretToken}")

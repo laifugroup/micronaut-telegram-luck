@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @RepositoryConfiguration(queryBuilder = JpaQueryBuilder::class)
 interface LuckUserRepository: BasePageableRepository2<LuckUserPO>   {
 
-   fun findByBotUserIdAndGroupId(@NonNull botUserId: Long,groupId:Long): LuckUserPO
+   fun findByBotUserIdAndGroupId(@NonNull botUserId: Long,groupId:Long): LuckUserPO?
 
    /**
     * 更新用户邀请人信息

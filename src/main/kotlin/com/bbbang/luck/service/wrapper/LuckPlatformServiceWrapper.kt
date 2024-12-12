@@ -11,13 +11,13 @@ import com.bbbang.luck.domain.vo.LuckUserVO
 import com.bbbang.luck.service.LuckPlatformService
 import com.bbbang.luck.service.LuckUserService
 import com.bbbang.parent.exception.BusinessException
+import io.micronaut.cache.annotation.CacheConfig
 import io.micronaut.cache.annotation.CachePut
 import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.chatbots.telegram.api.Update
 import io.micronaut.chatbots.telegram.api.User
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
-
 
 @Singleton
 open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatformService) {
@@ -26,7 +26,7 @@ open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatf
         return this.findByGroupId(update?.message?.chat?.id)
     }
 
-    @Cacheable("#groupId")
+    @Cacheable(value = ["platform"], parameters = ["groupId"])
     open fun findByGroupId(groupId: Long?): LuckPlatformVO? {
        val result= luckPlatformService.findByGroupId(groupId)
 //         if (result?.id==null){
@@ -35,7 +35,7 @@ open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatf
         return result
     }
 
-    @CachePut("#groupId")
+    @CachePut(value = ["platform"], parameters = ["groupId"])
     open fun saveGroupId(botUser: User?,groupId: Long?,groupName:String?=null): LuckPlatformVO? {
         val platform= luckPlatformService.findByGroupId(groupId)
         val result=if(platform?.id==null){
@@ -48,7 +48,7 @@ open class LuckPlatformServiceWrapper(private val luckPlatformService: LuckPlatf
 
 
 
-    @CachePut("#groupId")
+    @CachePut(value = ["platform"], parameters = ["groupId"])
     open fun saveGroupId2(botUser: User?,groupId: Long?,groupName:String?=null): LuckPlatformVO? {
         return   luckPlatformService.save(LuckPlatformBO(groupId=groupId,groupName = groupName, adminBotUserId = botUser?.id, status = PlatformStatus.ENABLE.code))
     }

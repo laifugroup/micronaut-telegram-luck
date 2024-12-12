@@ -20,7 +20,7 @@ class HelloWorldHandler(private val spaceParser: SpaceParser<Update, Chat>) : Te
     override fun getOrder() = Ordered.HELLO
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
-        println("------------------:HelloWorldHandler")
+        println("---hello")
         val match=  input.message?.text?.matches(HELLO.toRegex())
         return match!=null && match
     }

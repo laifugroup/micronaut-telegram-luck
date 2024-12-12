@@ -27,7 +27,7 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
     override fun getOrder() = Ordered.BALANCE
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
-       println("------------------:BalanceCallbackHandler")
+        println("---balance callback")
         val match=  input.callbackQuery?.data?.matches(BALANCE.toRegex())
         val m= match!=null && match
         return m

@@ -69,7 +69,7 @@ open class InitCommandHandler(
 
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update?): Boolean {
-        println("------------------:InitCommandHandler")
+        println("---init")
         return super.canHandle(bot, input)
     }
 

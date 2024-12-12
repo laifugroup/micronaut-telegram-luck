@@ -15,7 +15,7 @@ import java.util.Optional
 open class FinalCommandHandler(private val spaceParser: SpaceParser<Update, Chat>) : TelegramHandler<SendMessage> {
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
-        println("------------------:FinalCommandHandler")
+        println("---final")
         return true
     }
 

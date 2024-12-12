@@ -25,6 +25,7 @@ micronaut:
         battleBot:
           token: "zYCn88NYyzsjG9QGd8626BMGQ5y7DFBc"
           at-username: '@battleBot'
+
     folder: botcommands
   security:
     enabled: true
@@ -135,3 +136,33 @@ flyway:
   datasources:
     default:
       enabled: false
+
+tron:
+  url: "https://api.trongrid.io" # https://api.shasta.trongrid.io    	https://nile.trongrid.io
+  key: "02a48b5d-adfe-41aa-acf0-a1785cb7354d"
+  contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t" # 测试网络 nile USDT TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf
+  rechargeAddress: ${RECHARGE_ADDRESS:`TNK4E772yP6t7xFfZMMLfKQ6pJrByLk5yt`}
+app:
+  luck:
+    bot:
+      webhook:
+        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://proxy.abc.ltd/`}
+        url: ${BOT_WEBHOOK_URL:`https://proxy.abc.ltd/luck/v1/bot/webhook/handleMessage`}
+        secretToken: ${BOT_WEBHOOK_SECRET_TOKEN:`ceq0vd6p2ehd15jkxs62oedq55hu2qq8`}
+    limitBid: ${BET_LIMIT_BID:`5000`}
+    reservePrice:  ${BET_RESERVE_PRICE:`5`}
+    withdrawalLimit:  ${BET_WITHDRAWAL_LIMIT:`10`}
+    odds: ${BET_ODDS:`1.8`}
+    redPackNumbers: ${BET_RED_PACK_NUMBERS:`6`}
+    water: ${BET_WATER:`4`}
+    platformWater: ${BET_PLATFORM_WATER:`2.5`}
+    partnerWater: ${BET_PARTNER_WATER:`1.5`}
+    agentWater: ${BET_AGENT_WATER:`1.5`}
+    inviteRebate: ${BET_INVITE_REBATE:`0.1`}
+    magic: ${app.luck.bot.webhook.secretToken}
+    redPackUrl: ${BET_RED_PACK_URL:`https://proxy.abc.ltd/html/img/luck_boom.jpg`}
+    service:
+      financeBotUserId: ${BOT_FINANCE_USER_ID:`430713401`}
+      finance: ${FINANCE:`https://t.me/luck_caiwu`}
+      playRule: ${PLAY_RULE_SERVICE:`https://t.me/luck_dingyue`}
+      customerService: ${CUSTOMER_SERVICE:`https://t.me/luck_kefu`}

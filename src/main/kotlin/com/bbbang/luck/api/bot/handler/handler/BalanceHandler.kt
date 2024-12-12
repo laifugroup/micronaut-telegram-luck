@@ -32,6 +32,7 @@ open class BalanceHandler(private val spaceParser: SpaceParser<Update, Chat>
     override fun getOrder() = Ordered.BALANCE
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
+        println("---balance")
         val match=  input.message?.text?.matches(BALANCE.toRegex())
         return  match!=null && match
     }

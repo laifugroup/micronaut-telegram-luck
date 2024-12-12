@@ -1,6 +1,8 @@
 package com.bbbang.luck.api.bot.handler.command
 
 import com.bbbang.luck.api.bot.core.Ordered
+import com.bbbang.luck.helper.SassIdHelper
+import com.bbbang.luck.service.wrapper.LuckUserServiceWrapper
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.core.TextResourceLoader
@@ -21,6 +23,7 @@ open class StartCommandHandler(
     private val textResourceLoader: TextResourceLoader,
     private val spaceParser: SpaceParser<Update, Chat>,
     private val messageSource: MessageSource,
+    private val userServiceWrapper: LuckUserServiceWrapper
 ) : CommandHandler(slashCommandParser, textResourceLoader, spaceParser) {
 
     override fun getCommand() = COMMAND_START
@@ -36,7 +39,10 @@ open class StartCommandHandler(
         if (input?.message?.from?.bot==true){
             return Optional.empty()
         }
-        val welcomeStart = messageSource.getMessage("welcome.start", LocaleHelper.language(input), "lv0","优秀玩家",input?.message?.chat?.id,input?.message?.from?.id)
+        val from=input?.message?.from
+        val sassId=SassIdHelper.getSassId(input?.message?.chat?.id,input?.message?.from)
+        val user = userServiceWrapper.findByBotUser(from,sassId,input?.message?.chat?.id,input?.message?.chat?.type)
+        val welcomeStart = messageSource.getMessage("welcome.start", LocaleHelper.language(input), "1级","优秀玩家",user?.groupId,user?.botUserId)
             .orElse(LocaleHelper.EMPTY)
         return SendMessageUtils.compose(spaceParser, input, welcomeStart)
     }
@@ -44,7 +50,7 @@ open class StartCommandHandler(
 
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update?): Boolean {
-        println("------------------:StartCommandHandler")
+        println("---start")
         return super.canHandle(bot, input)
     }
 }
