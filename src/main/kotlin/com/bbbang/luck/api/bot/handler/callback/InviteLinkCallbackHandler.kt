@@ -5,11 +5,14 @@ import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.api.bot.telegram.AnswerCallbackQuery
 import com.bbbang.luck.api.bot.telegram.CreateChatInviteLink
 import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
+import com.bbbang.luck.api.bot.type.InviteType
 import com.bbbang.luck.configuration.properties.BotWebHookProperties
+import com.bbbang.luck.domain.bo.LuckInviteBO
 import com.bbbang.luck.service.LuckInviteService
 import com.bbbang.luck.service.LuckWalletService
 import com.bbbang.luck.service.wrapper.LuckUserServiceWrapper
 import com.bbbang.luck.utils.LocaleHelper
+import com.bbbang.luck.utils.UserNameHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
 import io.micronaut.chatbots.telegram.api.Update
@@ -19,9 +22,14 @@ import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
 import jakarta.inject.Singleton
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+import javax.xml.crypto.dsig.DigestMethod
 
 @Singleton
 open class InviteLinkCallbackHandler(private val spaceParser: SpaceParser<Update, Chat>
@@ -48,7 +56,7 @@ open class InviteLinkCallbackHandler(private val spaceParser: SpaceParser<Update
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage>{
         //不允许私聊中执行指令
-        if (input.message?.from?.id == input.message?.chat?.id) {
+        if (input.callbackQuery?.from?.id == input.callbackQuery?.message?.chat?.id) {
             val privateChatCommandMessage =
                 messageSource.getMessage("private.chat.bot.command", LocaleHelper.language(input))
                     .orElse(LocaleHelper.EMPTY)
@@ -57,35 +65,49 @@ open class InviteLinkCallbackHandler(private val spaceParser: SpaceParser<Update
 
 
 
-        val createChatInviteLink = CreateChatInviteLink(chatId = input.message?.chat?.id,
-            name = input.message?.chat?.title,
+        val createChatInviteLink = CreateChatInviteLink(
+            chatId = input.callbackQuery?.message?.chat?.id,
+            name = input.callbackQuery?.message?.chat?.title,
             expireDate = LocalDate.now().plusDays(365).atStartOfDay(ZoneOffset.UTC).toEpochSecond().toInt(),
             memberLimit = 1000,
             createsJoinRequest = false
         )
 
-       val chatInviteLink= telegramBotAPI.createChatInviteLink(botWebHookProperties.httpApiToken,createChatInviteLink)
+           val chatInviteLink= telegramBotAPI.createChatInviteLink(
+               botWebHookProperties.httpApiToken,
+               createChatInviteLink.chatId,
+               createChatInviteLink.name,
+               createChatInviteLink.expireDate,
+               createChatInviteLink.memberLimit,
+               createChatInviteLink.createsJoinRequest
+           )
 
-        chatInviteLink.result.inviteLink
-//        LuckInviteBO().apply {
-//            this.userId = user.id
-//            this.url = inviteLink?.inviteLink
-//            this.urlHash = DigestUtils.md5Hex(this.url?.toByteArray(Charsets.UTF_8))
-//            this.groupId = chat?.id
-//            this.status = InviteType.ENABLE.code
-//            this.expiredAt = LocalDateTime.ofEpochSecond(createChatInviteLink.expireDate.toLong(), 0, ZoneOffset.UTC)
-//        }
+           //println("chatInviteLink=${chatInviteLink.result.inviteLink}")
+        val instant = Instant.ofEpochSecond(createChatInviteLink.expireDate!!.toLong())
+        val result=chatInviteLink.result
+        val urlHash = MessageDigest.getInstance("MD5").digest(result.inviteLink?.toByteArray(StandardCharsets.UTF_8))?.let {
+            val sb = StringBuilder()
+            it.forEach { b -> sb.append(String.format("%02x", b)) }
+            sb.toString()
+        }
 
-        return Optional.empty()
+       val luckInviteBO= LuckInviteBO().apply {
+            this.userId = input.callbackQuery.from.id
+            this.url = result.inviteLink
+            this.urlHash =urlHash
+            this.groupId =createChatInviteLink.chatId
+            this.status = InviteType.ENABLE.code
+            this.expiredAt =instant.atOffset(ZoneOffset.UTC).toLocalDateTime()
+        }
 
+        val luckInvite=luckInviteService.save(luckInviteBO)
+        val luckInviteLink =messageSource.getMessage("luck.invite.link", LocaleHelper.language(input),UserNameHelper.getUserName(input), luckInvite.url).orElse(LocaleHelper.EMPTY)
 
-//       val wallet= luckWalletService.findWalletByUserId(input.callbackQuery?.from?.id,input.callbackQuery?.message?.chat?.id)
-//        val credit= wallet.credit
-//        val userId=wallet.userId
-//        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)
-//            .orElse(LocaleHelper.EMPTY)
-//        val answerCallbackQuery = AnswerCallbackQuery(input.callbackQuery.id, luckBalance, true, null, null)
-//        return Optional.of(answerCallbackQuery)
+        val sendInviteMessage = SendMessage().apply {
+            this.chatId=input.callbackQuery.message.chat?.id.toString()
+            this.text = luckInviteLink
+        }
+        return Optional.of(sendInviteMessage)
     }
 
 

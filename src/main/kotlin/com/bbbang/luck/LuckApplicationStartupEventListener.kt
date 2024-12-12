@@ -51,7 +51,7 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
             val httpApiToken=botWebHookProperties.httpApiToken
             val webhookUrl=botWebHookProperties.url
             val secretToken=botWebHookProperties.secretToken
-            println("webhookUrl=$webhookUrl")
+            //println("webhookUrl=$webhookUrl")
             val joinAllowedUpdates=objectMapper.writeValueAsString(allowedUpdates)
             val register=  telegramBotAPI.setWebhook(httpApiToken,webhookUrl,secretToken,joinAllowedUpdates)
             println(register.description)

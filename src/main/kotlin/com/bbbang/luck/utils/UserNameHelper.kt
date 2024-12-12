@@ -14,10 +14,7 @@ class UserNameHelper {
             if (messageLastName!= null) {
                 return messageLastName
             }
-            val messageUsername = input.message?.from?.username
-            if (messageUsername!= null) {
-                return messageUsername
-            }
+
             val callbackQueryFirstName = input.callbackQuery?.from?.firstName
             if (callbackQueryFirstName!= null) {
                 return callbackQueryFirstName
@@ -26,6 +23,12 @@ class UserNameHelper {
             if (callbackQueryLastName!= null) {
                 return callbackQueryLastName
             }
+
+            val messageUsername = input.message?.from?.username
+            if (messageUsername!= null) {
+                return messageUsername
+            }
+
             val callbackQueryUsername = input.callbackQuery?.from?.username
             if (callbackQueryUsername!= null) {
                 return callbackQueryUsername
