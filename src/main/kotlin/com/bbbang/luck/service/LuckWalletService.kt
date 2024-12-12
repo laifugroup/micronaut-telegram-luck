@@ -22,8 +22,8 @@ open class LuckWalletService(private val repository: LuckWalletRepository)
 
 
     fun findWalletByUserId(userId:Long?,groupId:Long?) : LuckWalletVO {
-     val user= repository.findByUserId(userId?:0)
-        val users=if (user.id==null){
+     val wallet= repository.findByUserId(userId)
+        val myWallet=if (wallet?.id==null){
             repository .save(LuckWalletPO().apply {
                 this.userId=userId
                 this.credit= BigDecimal.ZERO
@@ -31,9 +31,9 @@ open class LuckWalletService(private val repository: LuckWalletRepository)
                 this.groupId=groupId
             })
         }else{
-            user
+            wallet
         }
-       return LuckWalletMapper.MAPPER.po2vo(users)
+       return LuckWalletMapper.MAPPER.po2vo(myWallet)
     }
 
     fun findByUserIdInList(@NonNull userIdList: List<Long?>): List<LuckWalletPO>{

@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 interface LuckWalletRepository: BasePageableRepository2<LuckWalletPO>   {
 
 
-    fun findByUserId(@NonNull userId: Long): LuckWalletPO
+    fun findByUserId(@NonNull userId: Long?): LuckWalletPO?
 
     fun findByUserIdInList(@NonNull userIdList: List<Long?>): List<LuckWalletPO>
 
