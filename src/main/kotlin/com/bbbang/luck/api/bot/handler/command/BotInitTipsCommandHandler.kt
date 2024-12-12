@@ -20,6 +20,8 @@ import java.util.Optional
 open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update, Chat>,
                                      private val messageSource:MessageSource) : TelegramHandler<SendMessage> {
 
+    override fun getOrder() = Ordered.INIT_PRE_VERIFY
+
     //检查是否初始化bot
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update):Boolean {
         println("------------------:BotInitTipsCommandHandler")
@@ -37,5 +39,5 @@ open class BotInitTipsCommandHandler(private val spaceParser: SpaceParser<Update
 
 
 
-    override fun getOrder() = Ordered.INIT_PRE_VERIFY
+
 }

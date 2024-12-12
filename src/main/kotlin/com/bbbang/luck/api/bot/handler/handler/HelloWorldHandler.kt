@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.handler
 
+import com.bbbang.luck.api.bot.core.Ordered
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
 import io.micronaut.chatbots.telegram.api.Update
@@ -16,6 +17,7 @@ class HelloWorldHandler(private val spaceParser: SpaceParser<Update, Chat>) : Te
     companion object{
         const val HELLO = "hello"
     }
+    override fun getOrder() = Ordered.HELLO
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
         println("------------------:HelloWorldHandler")

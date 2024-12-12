@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.handler
 
+import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.utils.SendPhotoUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.chatbots.core.SpaceParser
@@ -21,6 +22,8 @@ class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
     companion object{
         const val NEW_GAME_COMMAND = "newGame"
     }
+
+    override fun getOrder() = Ordered.NEW_GAME
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
         println("------------------:NewGameHandler")

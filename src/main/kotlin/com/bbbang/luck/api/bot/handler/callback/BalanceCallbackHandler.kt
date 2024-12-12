@@ -1,12 +1,12 @@
-package com.bbbang.luck.api.bot.handler.handler
+package com.bbbang.luck.api.bot.handler.callback
 
+import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.api.bot.telegram.AnswerCallbackQuery
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.telegram.api.Chat
 import io.micronaut.chatbots.telegram.api.Update
 import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TelegramHandler
-import io.micronaut.core.order.Ordered
 import jakarta.inject.Singleton
 import java.util.Optional
 
@@ -15,6 +15,7 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
     companion object{
         const val BALANCE = "(?i)(ye|余额|查|yue)"
     }
+    override fun getOrder() = Ordered.BALANCE
 
     override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
        println("------------------:BalanceCallbackHandler")
@@ -28,5 +29,5 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
         return Optional.of(answerCallbackQuery)
     }
 
-    override fun getOrder() = Ordered.LOWEST_PRECEDENCE
+
 }

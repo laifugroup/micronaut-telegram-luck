@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.command
 
+import com.bbbang.luck.api.bot.core.Ordered
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.core.TextResourceLoader
 import io.micronaut.chatbots.telegram.api.Chat
@@ -23,6 +24,10 @@ open class AboutCommandHandler(
     companion object {
         private const val COMMAND_ABOUT = "/about"
     }
+
+    override fun getOrder() = Ordered.ABOUT
+
+
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update?): Optional<SendMessage> {
         return super.handle(bot, input)

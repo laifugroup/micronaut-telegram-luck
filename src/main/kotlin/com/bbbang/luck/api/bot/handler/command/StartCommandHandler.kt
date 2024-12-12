@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.command
 
+import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.utils.LocaleHelper
 import io.micronaut.chatbots.core.SpaceParser
 import io.micronaut.chatbots.core.TextResourceLoader
@@ -27,6 +28,9 @@ open class StartCommandHandler(
     companion object {
         private const val COMMAND_START = "/start"
     }
+
+    override fun getOrder() = Ordered.START
+
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update?): Optional<SendMessage> {
         if (input?.message?.from?.bot==true){

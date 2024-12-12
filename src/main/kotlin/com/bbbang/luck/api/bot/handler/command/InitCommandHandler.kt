@@ -29,6 +29,8 @@ open class InitCommandHandler(
         private const val COMMAND_INIT = "/init"
     }
 
+    override fun getOrder() = Ordered.INIT
+
     override fun handle(bot: TelegramBotConfiguration?, input: Update?): Optional<SendMessage> {
         if (input?.message?.from?.bot==true){
             return Optional.empty()
@@ -54,5 +56,5 @@ open class InitCommandHandler(
         return super.canHandle(bot, input)
     }
 
-    override fun getOrder() = Ordered.INIT
+
 }
