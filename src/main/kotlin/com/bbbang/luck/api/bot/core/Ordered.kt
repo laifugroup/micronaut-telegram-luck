@@ -13,6 +13,17 @@ interface Ordered {
 
         const  val   ABOUT : Int =7
 
+        const  val   GAME_REPORT : Int =8
+
+
+        const  val   WATER_RATE : Int =9
+
+        const  val   INVITE_QUERY : Int =10
+
+        const  val   GRAB_RED_PACKET : Int =11
+
+
+
     }
 
 }

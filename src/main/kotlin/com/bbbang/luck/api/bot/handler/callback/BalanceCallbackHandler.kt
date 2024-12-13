@@ -1,5 +1,6 @@
 package com.bbbang.luck.api.bot.handler.callback
 
+import com.bbbang.luck.api.bot.core.CallbackData
 import com.bbbang.luck.api.bot.core.Ordered
 import com.bbbang.luck.api.bot.telegram.AnswerCallbackQuery
 import com.bbbang.luck.service.LuckWalletService
@@ -21,7 +22,7 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
     ) : TelegramHandler<AnswerCallbackQuery> {
 
     companion object{
-        const val BALANCE = "balance"
+        const val BALANCE = CallbackData.BALANCE
     }
 
     override fun getOrder() = Ordered.BALANCE

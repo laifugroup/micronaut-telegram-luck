@@ -1,0 +1,236 @@
+package com.bbbang.luck.api.bot.handler.callback
+
+import com.bbbang.luck.api.bot.core.CallbackData
+import com.bbbang.luck.api.bot.core.Ordered
+import com.bbbang.luck.api.bot.telegram.AnswerCallbackQuery
+import com.bbbang.luck.api.bot.telegram.EditMessageCaption
+import com.bbbang.luck.api.bot.type.CreditLogType
+import com.bbbang.luck.configuration.properties.LuckProperties
+import com.bbbang.luck.configuration.properties.ServiceProperties
+import com.bbbang.luck.configuration.properties.TronProperties
+import com.bbbang.luck.domain.bo.LuckGoodLuckBO
+import com.bbbang.luck.service.LuckGoodLuckService
+import com.bbbang.luck.service.LuckSendLuckService
+import com.bbbang.luck.service.LuckWalletService
+import com.bbbang.luck.service.wrapper.LuckUserServiceWrapper
+import com.bbbang.luck.utils.LocaleHelper
+import com.bbbang.luck.utils.UserNameHelper
+import com.bbbang.parent.utils.BigDecimalUtils
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.micronaut.chatbots.core.SpaceParser
+import io.micronaut.chatbots.telegram.api.Chat
+import io.micronaut.chatbots.telegram.api.InlineKeyboardButton
+import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
+import io.micronaut.chatbots.telegram.api.Update
+import io.micronaut.chatbots.telegram.api.send.ParseMode
+import io.micronaut.chatbots.telegram.api.send.Send
+import io.micronaut.chatbots.telegram.api.send.SendMessage
+import io.micronaut.chatbots.telegram.api.send.SendPhoto
+import io.micronaut.chatbots.telegram.core.SendMessageUtils
+import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
+import io.micronaut.chatbots.telegram.core.TelegramHandler
+import io.micronaut.context.MessageSource
+import jakarta.inject.Singleton
+import java.util.*
+
+@Singleton
+open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat>
+                               , private val messageSource: MessageSource
+                               , private val luckWalletService: LuckWalletService
+                               , private val luckProperties: LuckProperties
+                               , private val tronProperties: TronProperties
+                               , private val luckGoodLuckService: LuckGoodLuckService
+                               , private val luckSendLuckService: LuckSendLuckService
+                               , private val serviceProperties: ServiceProperties
+                               , private val objectMapper: ObjectMapper,
+) : TelegramHandler<Send> {
+
+    companion object{
+        const val GRAB_RED_PACKET = CallbackData.GRAB_RED_PACKET
+    }
+
+    override fun getOrder() = Ordered.GRAB_RED_PACKET
+
+    override fun canHandle(bot: TelegramBotConfiguration?, input: Update): Boolean {
+        println("---grab_red_pack callback")
+        val match=  input.callbackQuery?.data?.startsWith(GRAB_RED_PACKET)
+        val m= match!=null && match
+        return m
+    }
+
+    override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<Send>{
+
+        val botUser = input.callbackQuery.from
+        val locale = LocaleHelper.language(input)
+        val chatId=input.callbackQuery.message.chat.id
+        val messageId=input.callbackQuery.message.messageId
+
+        val redPackMessage = input.callbackQuery.message.replyToMessage.text
+        val pattern = "[-|/]".toRegex()
+        val split = redPackMessage.split(pattern)
+        val total = split[0]
+        val boomNumber = split[1]
+        //val dollar=Integer.valueOf(total)*100
+        val redPackDataStr = input.callbackQuery.data.split("|")
+        val redPackId=redPackDataStr[1].toLong()
+        val sendLuckUserId=redPackDataStr[2].toLong()
+        val oddsCredit = luckProperties.odds.multiply(total.toBigDecimal())
+
+
+        //1.查询用户，如果用户不存在就新建用户
+        //2.验证余额是否足够倍数
+        //3.查询是否有抢红包记录，如果无抢空包记录，扣除额度并增加记录
+        //4.查询抢红包合计数量，并推送显示
+        //5.计算红包结果，并更新抢红包结果。返回扣除额度，并根据结果更新余额分值
+        val counts=luckGoodLuckService.countByLuckRedPackId(redPackId)
+        if (counts>=luckProperties.redPackNumbers){
+            //红包已经抢完
+            return Optional.empty()
+        }
+        val wallet=luckWalletService.findWalletByUserId(input.callbackQuery?.from?.id,input.callbackQuery?.message?.chat?.id)
+        if (wallet.credit?.compareTo(oddsCredit)== BigDecimalUtils.SMALL) {
+            val luckInsufficientBalance = messageSource.getMessage("luck.insufficient.balance",LocaleHelper.language(input), UserNameHelper.getUserName(input),botUser.id,wallet.credit,tronProperties.rechargeAddress)
+                .orElse(LocaleHelper.EMPTY)
+            val send=SendMessage().apply {
+                this.text=luckInsufficientBalance
+                this.chatId=chatId
+                this.parseMode=ParseMode.MARKDOWN.toString()
+            }
+            return Optional.of(send)
+        }
+        val hasLuckGoodLuck= luckGoodLuckService.existsByLuckRedPackIdAndUserId(redPackId,wallet.userId)
+        if (hasLuckGoodLuck){
+            //用户已经抢过红包
+            return Optional.empty()
+        }
+        val luckSendLuck=luckSendLuckService.findById(redPackId)
+        val luckGoodLuckBO= LuckGoodLuckBO().apply {
+            this.luckRedPackId = redPackId
+            this.userId = wallet.userId
+            this.boomNumber = boomNumber.toInt()
+            this.credit = null
+            this.firstName=botUser.firstName
+            this.lastName=botUser.lastName
+            this.userName=botUser.username
+            this.sendRedPackUserId=luckSendLuck?.userId
+            this.groupId=chatId
+        }
+       val luckGoodLuck= luckGoodLuckService.save(luckGoodLuckBO)
+       val grabCounts=  luckGoodLuckService.countByLuckRedPackId(luckSendLuck?.id)
+        if (grabCounts==luckProperties.redPackNumbers){
+            //
+        }
+
+
+
+        //变更钱红包人数
+
+        input.callbackQuery.message.replyToMessage
+        val fromId= input.callbackQuery.message.replyToMessage.from.id
+        val firstName= input.callbackQuery.message.replyToMessage.from.firstName
+        //val lastName= input.callbackQuery.message.replyToMessage.from.lastName
+
+        //val redPack=input.callbackQuery.message.replyToMessage.text
+        val addGrabNumber=2
+        val maxNumber=luckProperties.redPackNumbers
+        val grabMessage=messageSource.getMessage("luck.grab.message",locale,maxNumber,addGrabNumber,total,boomNumber).orElse(
+            LocaleHelper.EMPTY)
+
+
+
+        val replyMarkup=input.callbackQuery.message.replyMarkup
+        replyMarkup.inlineKeyboard[0][0].text=grabMessage
+        //不使用这个文字，因为丢失了样式
+        //val cation=callbackQuery.message.caption
+        val replayLuckMessage=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
+
+
+        val initGrabNumber = 0;
+        val keyboard= InlineKeyboardMarkup()
+        keyboard.inlineKeyboard= listOf(
+            listOf(
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.grab.message",locale,maxNumber,initGrabNumber,total,boomNumber).orElse(LocaleHelper.EMPTY)
+                    // callbackData=CallbackData.GRAB_RED_PACKET
+                    callbackData="${CallbackData.GRAB_RED_PACKET}|${luckSendLuck?.id}|${luckSendLuck?.userId}|${luckSendLuck?.credit}|${luckSendLuck?.boomNumber}"
+                    //url=""
+                }
+            ),
+            listOf(
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.withdrawal", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.WITHDRAWAL
+                    //url=""
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.recharge", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.RECHARGE
+
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.play_rule", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.PLAY_RULE
+                    url=serviceProperties.playRule
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.balance", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData= CallbackData.BALANCE
+                }
+            ),
+            listOf(
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.invite_link", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.INVITE_LINK
+                    //url=""
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.invite_query", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.INVITE_QUERY
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.water_rate", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.WATER_RATE
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.game_report", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.GAME_REPORT
+                }
+            ),
+            listOf(
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.cashier", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.CASHIER
+                    url=serviceProperties.finance
+                },
+                InlineKeyboardButton().apply {
+                    text=messageSource.getMessage("luck.callback.customer_service", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
+                    callbackData=CallbackData.CUSTOMER_SERVICE
+                    url=serviceProperties.customerService
+                },
+            )
+        )
+        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
+
+      val editMessageCaption=  EditMessageCaption(chatId=input.message.chat.id, name = "12121", messageId = input.callbackQuery.message.messageId,
+          caption = replayLuckMessage,
+          replyMarkup = keyboard,
+          parseMode = ParseMode.MARKDOWN.toString())
+//
+//        this.chatId =
+//            this.photo = luckProperties.redPackUrl
+//        this.caption=replayLuckMessage
+//        this.replyMarkup=inlineKeyboard
+//        this.parseMode=ParseMode.MARKDOWN.toString()
+//
+
+//       val wallet= luckWalletService.findWalletByUserId(input.callbackQuery?.from?.id,input.callbackQuery?.message?.chat?.id)
+//        val credit= wallet.credit
+//        val userId=wallet.userId
+//        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)
+//            .orElse(LocaleHelper.EMPTY)
+//        val answerCallbackQuery = AnswerCallbackQuery(input.callbackQuery.id, luckBalance, true, null, null)
+        return Optional.of(editMessageCaption)
+    }
+
+
+}

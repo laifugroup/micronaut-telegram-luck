@@ -2,10 +2,10 @@ package com.bbbang.luck.api.bot.handler.handler
 
 import com.bbbang.luck.api.bot.core.CallbackData
 import com.bbbang.luck.api.bot.core.Ordered
-import com.bbbang.luck.api.bot.type.CallBackActionsType
 import com.bbbang.luck.api.bot.type.CreditLogType
 import com.bbbang.luck.api.bot.type.SendLuckType
 import com.bbbang.luck.configuration.properties.LuckProperties
+import com.bbbang.luck.configuration.properties.ServiceProperties
 import com.bbbang.luck.configuration.properties.TronProperties
 import com.bbbang.luck.domain.bo.LuckCreditLogBO
 import com.bbbang.luck.domain.bo.LuckSendLuckBO
@@ -38,13 +38,14 @@ import java.util.*
 
 @Singleton
 open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
-                     private val objectMapper: ObjectMapper,
-                     private val messageSource: MessageSource,
-                     private val luckProperties: LuckProperties,
-                     private val luckWallService: LuckWalletService,
-                     private val luckSendLuckService: LuckSendLuckService,
-                     private val luckCreditLogService: LuckCreditLogService,
-                     private val tronProperties: TronProperties,
+                          private val objectMapper: ObjectMapper,
+                          private val messageSource: MessageSource,
+                          private val luckProperties: LuckProperties,
+                          private val luckWallService: LuckWalletService,
+                          private val luckSendLuckService: LuckSendLuckService,
+                          private val luckCreditLogService: LuckCreditLogService,
+                          private val tronProperties: TronProperties,
+                          private val serviceProperties: ServiceProperties,
                      ) : TelegramHandler<Send> {
 
     companion object{
@@ -130,7 +131,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
         val maxNumber=luckProperties.redPackNumbers
         val initGrabNumber=0
 
-        val photo="https://raw.githubusercontent.com/laifugroup/luck-vertx/refs/heads/master/src/main/resources/views/img/luck_boom.jpg"
+
         val caption=messageSource.getMessage("luck.grab.replay",locale, UserNameHelper.getUserName(input),input.message.from.id,total).orElse(LocaleHelper.EMPTY)
 
         val keyboard= InlineKeyboardMarkup()
@@ -139,7 +140,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.grab.message",locale,maxNumber,initGrabNumber,total,boomNumber).orElse(LocaleHelper.EMPTY)
                    // callbackData=CallbackData.GRAB_RED_PACKET
-                    callbackData="${CallBackActionsType.GRAB_RED_PACK.code}|${luckSendLuck.id}|${luckSendLuck.userId}|${luckSendLuck.credit}|${luckSendLuck.boomNumber}"
+                    callbackData="${CallbackData.GRAB_RED_PACKET}|${luckSendLuck.id}|${luckSendLuck.userId}|${luckSendLuck.credit}|${luckSendLuck.boomNumber}"
                     //url=""
                 }
             ),
@@ -152,11 +153,12 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.callback.recharge", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
                     callbackData=CallbackData.RECHARGE
-                    url="https://baidu.com"
+
                 },
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.callback.play_rule", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
                     callbackData=CallbackData.PLAY_RULE
+                    url=serviceProperties.playRule
                 },
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.callback.balance", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
@@ -186,11 +188,12 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.callback.cashier", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
                     callbackData=CallbackData.CASHIER
-                    //url=""
+                    url=serviceProperties.finance
                 },
                 InlineKeyboardButton().apply {
                     text=messageSource.getMessage("luck.callback.customer_service", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
                     callbackData=CallbackData.CUSTOMER_SERVICE
+                    url=serviceProperties.customerService
                 },
             )
         )
@@ -198,10 +201,11 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
        //SendPhotoUtils.compose(spaceParser,input,photo,caption,inlineKeyboard, ParseMode.MARKDOWN)
         return Optional.of(SendPhoto().apply {
             this.chatId = input.message.chat.id.toString()
-            this.photo = photo
+            this.photo = luckProperties.redPackUrl
             this.caption=caption
             this.replyMarkup=inlineKeyboard
             this.parseMode=ParseMode.MARKDOWN.toString()
+            this.replyToMessageId=input.message.messageId.toString()
         })
     }
 

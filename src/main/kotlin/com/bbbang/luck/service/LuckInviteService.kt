@@ -16,12 +16,22 @@ import reactor.core.publisher.Mono
 open class LuckInviteService(private val repository: LuckInviteRepository)
 :BaseServiceImpl2<LuckInviteDTO, LuckInvitePageDTO, LuckInviteBO, LuckInvitePO, LuckInviteVO>(repository, LuckInviteMapper.MAPPER){
 
-    fun findByUserId(userId:Long):LuckInviteVO{
-        return LuckInviteMapper.MAPPER.po2vo(repository.findByUserId(userId))
+    fun findByUserId(userId:Long):LuckInviteVO?{
+        val result=repository.findOneByUserIdOrderByIdDesc(userId)
+        return  if (result==null){
+             null
+        }else{
+             LuckInviteMapper.MAPPER.po2vo(result)
+        }
     }
 
-    fun findByUrlHash(urlHash:String):LuckInviteVO{
-        return  LuckInviteMapper.MAPPER.po2vo(repository.findByUrlHash(urlHash))
+    fun findByUrlHash(urlHash:String):LuckInviteVO?{
+        val result=repository.findByUrlHash(urlHash)
+        return  if (result==null){
+            null
+        }else{
+            LuckInviteMapper.MAPPER.po2vo(result)
+        }
     }
 
 }

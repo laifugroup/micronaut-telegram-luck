@@ -11,9 +11,8 @@ import reactor.core.publisher.Mono
 @RepositoryConfiguration(queryBuilder = JpaQueryBuilder::class)
 interface LuckInviteRepository: BasePageableRepository2<LuckInvitePO>   {
 
-   fun findByUserId(userId: Long): LuckInvitePO
-
-   fun findByUrlHash(urlHash: String): LuckInvitePO
+   fun findOneByUserIdOrderByIdDesc(userId: Long): LuckInvitePO?
+   fun findByUrlHash(urlHash: String): LuckInvitePO?
 
 
 }

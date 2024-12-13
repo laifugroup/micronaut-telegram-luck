@@ -63,6 +63,15 @@ open class InviteLinkCallbackHandler(private val spaceParser: SpaceParser<Update
             return SendMessageUtils.compose(spaceParser, input, privateChatCommandMessage)
         }
 
+        val inviteLink=luckInviteService.findByUserId(input.callbackQuery?.from?.id!!)
+        if (inviteLink!=null && inviteLink.expiredAt?.isAfter(LocalDateTime.now()) == true){
+            val luckInviteLink =messageSource.getMessage("luck.invite.link", LocaleHelper.language(input),UserNameHelper.getUserName(input), inviteLink.url).orElse(LocaleHelper.EMPTY)
+            val sendInviteMessage = SendMessage().apply {
+                this.chatId=input.callbackQuery.message.chat?.id.toString()
+                this.text = luckInviteLink
+            }
+            return Optional.of(sendInviteMessage)
+        }
 
 
         val createChatInviteLink = CreateChatInviteLink(

@@ -3,7 +3,7 @@ package com.bbbang.luck.api.bot.core
  interface CallbackData {
    companion object{
        //红包
-       const val  GRAB_RED_PACKET : String ="grab_red_packet"
+       const val  GRAB_RED_PACKET : String ="grab"
 
        //提现
        const val  WITHDRAWAL: String ="withdrawal"
