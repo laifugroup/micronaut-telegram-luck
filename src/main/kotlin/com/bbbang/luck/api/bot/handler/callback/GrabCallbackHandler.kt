@@ -9,6 +9,7 @@ import com.bbbang.luck.configuration.properties.LuckProperties
 import com.bbbang.luck.configuration.properties.ServiceProperties
 import com.bbbang.luck.configuration.properties.TronProperties
 import com.bbbang.luck.domain.bo.LuckGoodLuckBO
+import com.bbbang.luck.helper.InlineKeyboardMarkupHelper
 import com.bbbang.luck.service.LuckGoodLuckService
 import com.bbbang.luck.service.LuckSendLuckService
 import com.bbbang.luck.service.LuckWalletService
@@ -143,78 +144,15 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         //不使用这个文字，因为丢失了样式
         //val cation=callbackQuery.message.caption
         val caption=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
+        val keyboard= InlineKeyboardMarkupHelper
+            .getGrabInlineKeyboardMarkup(input,total,boomNumber,grabMessage,luckSendLuck!!,luckProperties,serviceProperties,messageSource)
 
-
-        val initGrabNumber = 1
-        val keyboard= InlineKeyboardMarkup()
-        keyboard.inlineKeyboard= listOf(
-            listOf(
-                InlineKeyboardButton().apply {
-                    text=grabMessage
-                    // callbackData=CallbackData.GRAB_RED_PACKET
-                    callbackData="${CallbackData.GRAB_RED_PACKET}|${luckSendLuck?.id}|${luckSendLuck?.userId}|${luckSendLuck?.credit}|${luckSendLuck?.boomNumber}"
-                    //url=""
-                }
-            ),
-            listOf(
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.withdrawal", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.WITHDRAWAL
-                    //url=""
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.recharge", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.RECHARGE
-
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.play_rule", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.PLAY_RULE
-                    url=serviceProperties.playRule
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.balance", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData= CallbackData.BALANCE
-                }
-            ),
-            listOf(
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.invite_link", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.INVITE_LINK
-                    //url=""
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.invite_query", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.INVITE_QUERY
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.water_rate", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.WATER_RATE
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.game_report", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.GAME_REPORT
-                }
-            ),
-            listOf(
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.cashier", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.CASHIER
-                    url=serviceProperties.finance
-                },
-                InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.callback.customer_service", LocaleHelper.language(input)).orElse(LocaleHelper.EMPTY)
-                    callbackData=CallbackData.CUSTOMER_SERVICE
-                    url=serviceProperties.customerService
-                },
-            )
-        )
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 
       val editMessageCaption=  EditMessageCaption(chatId=input.callbackQuery.message.chat.id,
           name = null,
           messageId = input.callbackQuery.message.messageId,
-          caption = caption+"我个毛线哦没",
+          caption = caption+"我是更新",
           parseMode = ParseMode.MARKDOWN.toString()
       )
         editMessageCaption.replyMarkup = inlineKeyboard
