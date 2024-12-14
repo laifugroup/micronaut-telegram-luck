@@ -30,8 +30,6 @@ import jakarta.validation.constraints.NotNull
      val parseMode: String? = null,
      @JsonProperty("caption_entities")
      val captionEntities: String? = null,
-     @JsonProperty("reply_markup")
-     val replyMarkup: InlineKeyboardMarkup? = null,
      method: String?=CREATE_CHAT_INVITE_LINK,
 ): Send(method) {
      companion object{

@@ -101,7 +101,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         val hasLuckGoodLuck= luckGoodLuckService.existsByLuckRedPackIdAndUserId(redPackId,wallet.userId)
         if (hasLuckGoodLuck){
             //用户已经抢过红包
-            return Optional.empty()
+            //return Optional.empty()
         }
         val luckSendLuck=luckSendLuckService.findById(redPackId)
         val luckGoodLuckBO= LuckGoodLuckBO().apply {
@@ -138,19 +138,19 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
 
 
 
-        val replyMarkup=input.callbackQuery.message.replyMarkup
-        replyMarkup.inlineKeyboard[0][0].text=grabMessage
+        //val replyMarkup=input.callbackQuery.message.replyMarkup
+        //replyMarkup.inlineKeyboard[0][0].text=grabMessage
         //不使用这个文字，因为丢失了样式
         //val cation=callbackQuery.message.caption
-        val replayLuckMessage=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
+        val caption=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
 
 
-        val initGrabNumber = 0;
+        val initGrabNumber = 1
         val keyboard= InlineKeyboardMarkup()
         keyboard.inlineKeyboard= listOf(
             listOf(
                 InlineKeyboardButton().apply {
-                    text=messageSource.getMessage("luck.grab.message",locale,maxNumber,initGrabNumber,total,boomNumber).orElse(LocaleHelper.EMPTY)
+                    text=grabMessage
                     // callbackData=CallbackData.GRAB_RED_PACKET
                     callbackData="${CallbackData.GRAB_RED_PACKET}|${luckSendLuck?.id}|${luckSendLuck?.userId}|${luckSendLuck?.credit}|${luckSendLuck?.boomNumber}"
                     //url=""
@@ -211,10 +211,13 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         )
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 
-      val editMessageCaption=  EditMessageCaption(chatId=input.message.chat.id, name = "12121", messageId = input.callbackQuery.message.messageId,
-          caption = replayLuckMessage,
-          replyMarkup = keyboard,
-          parseMode = ParseMode.MARKDOWN.toString())
+      val editMessageCaption=  EditMessageCaption(chatId=input.callbackQuery.message.chat.id,
+          name = null,
+          messageId = input.callbackQuery.message.messageId,
+          caption = caption+"我个毛线哦没",
+          parseMode = ParseMode.MARKDOWN.toString()
+      )
+        editMessageCaption.replyMarkup = inlineKeyboard
 //
 //        this.chatId =
 //            this.photo = luckProperties.redPackUrl
