@@ -9,6 +9,8 @@ import com.bbbang.luck.configuration.properties.LuckProperties
 import com.bbbang.luck.configuration.properties.ServiceProperties
 import com.bbbang.luck.configuration.properties.TronProperties
 import com.bbbang.luck.domain.bo.LuckGoodLuckBO
+import com.bbbang.luck.domain.po.LuckSendLuckPO
+import com.bbbang.luck.domain.vo.LuckSendLuckVO
 import com.bbbang.luck.helper.InlineKeyboardMarkupHelper
 import com.bbbang.luck.service.LuckGoodLuckService
 import com.bbbang.luck.service.LuckSendLuckService
@@ -32,7 +34,11 @@ import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
 import jakarta.inject.Singleton
+import jakarta.transaction.Transactional
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 @Singleton
 open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat>
@@ -45,6 +51,9 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
                                , private val serviceProperties: ServiceProperties
                                , private val objectMapper: ObjectMapper,
 ) : TelegramHandler<Send> {
+
+
+    private val locks = ConcurrentHashMap<String, Lock>()
 
     companion object{
         const val GRAB_RED_PACKET = CallbackData.GRAB_RED_PACKET
@@ -60,6 +69,18 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<Send>{
+        val redPackDataStr = input.callbackQuery.data.split("|")
+        val redPackId=redPackDataStr[1]
+        val redPackDataLock = locks.computeIfAbsent(redPackId) { ReentrantLock() }
+        redPackDataLock.lock()
+        try {
+            return handleMe(bot, input)
+        } finally {
+            redPackDataLock.unlock()
+        }
+    }
+     @Transactional
+     private fun handleMe(bot: TelegramBotConfiguration?, input: Update): Optional<Send>{
 
         val botUser = input.callbackQuery.from
         val locale = LocaleHelper.language(input)
@@ -104,7 +125,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
             //用户已经抢过红包
             //return Optional.empty()
         }
-        val luckSendLuck=luckSendLuckService.findById(redPackId)
+         //抢红包记录
         val luckGoodLuckBO= LuckGoodLuckBO().apply {
             this.luckRedPackId = redPackId
             this.userId = wallet.userId
@@ -113,17 +134,9 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
             this.firstName=botUser.firstName
             this.lastName=botUser.lastName
             this.userName=botUser.username
-            this.sendRedPackUserId=luckSendLuck?.userId
             this.groupId=chatId
         }
-       val luckGoodLuck= luckGoodLuckService.save(luckGoodLuckBO)
-       val grabCounts=  luckGoodLuckService.countByLuckRedPackId(luckSendLuck?.id)
-        if (grabCounts==luckProperties.redPackNumbers){
-            //
-        }
-
-
-
+        luckGoodLuckService.save(luckGoodLuckBO)
         //变更钱红包人数
 
         input.callbackQuery.message.replyToMessage
@@ -132,46 +145,31 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         //val lastName= input.callbackQuery.message.replyToMessage.from.lastName
 
         //val redPack=input.callbackQuery.message.replyToMessage.text
-        val addGrabNumber=2
+        val addGrabNumber=counts+1
         val maxNumber=luckProperties.redPackNumbers
         val grabMessage=messageSource.getMessage("luck.grab.message",locale,maxNumber,addGrabNumber,total,boomNumber).orElse(
             LocaleHelper.EMPTY)
 
-
-
-        //val replyMarkup=input.callbackQuery.message.replyMarkup
-        //replyMarkup.inlineKeyboard[0][0].text=grabMessage
-        //不使用这个文字，因为丢失了样式
-        //val cation=callbackQuery.message.caption
+         val luckSendLuck= LuckSendLuckVO().apply {
+             this.id=redPackId
+             this.userId=sendLuckUserId
+             this.credit=total.toBigDecimal()
+             this.boomNumber=boomNumber.toInt()
+         }
         val caption=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
         val keyboard= InlineKeyboardMarkupHelper
-            .getGrabInlineKeyboardMarkup(input,total,boomNumber,grabMessage,luckSendLuck!!,luckProperties,serviceProperties,messageSource)
+            .getGrabInlineKeyboardMarkup(input,total,boomNumber,grabMessage,luckSendLuck,luckProperties,serviceProperties,messageSource)
 
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 
-      val editMessageCaption=  EditMessageCaption(chatId=input.callbackQuery.message.chat.id,
-          name = null,
-          messageId = input.callbackQuery.message.messageId,
-          caption = caption+"我是更新",
-          parseMode = ParseMode.MARKDOWN.toString()
-      )
+        val editMessageCaption=  EditMessageCaption(chatId=input.callbackQuery.message.chat.id,
+            name = null,
+            messageId = messageId,
+            caption = caption+"我是更新",
+            parseMode = ParseMode.MARKDOWN.toString()
+        )
         editMessageCaption.replyMarkup = inlineKeyboard
-//
-//        this.chatId =
-//            this.photo = luckProperties.redPackUrl
-//        this.caption=replayLuckMessage
-//        this.replyMarkup=inlineKeyboard
-//        this.parseMode=ParseMode.MARKDOWN.toString()
-//
-
-//       val wallet= luckWalletService.findWalletByUserId(input.callbackQuery?.from?.id,input.callbackQuery?.message?.chat?.id)
-//        val credit= wallet.credit
-//        val userId=wallet.userId
-//        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)
-//            .orElse(LocaleHelper.EMPTY)
-//        val answerCallbackQuery = AnswerCallbackQuery(input.callbackQuery.id, luckBalance, true, null, null)
         return Optional.of(editMessageCaption)
     }
-
 
 }

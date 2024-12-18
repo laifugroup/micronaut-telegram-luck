@@ -23,6 +23,14 @@ interface Ordered {
         const  val   GRAB_RED_PACKET : Int =11
 
 
+        const  val   WITHDRAWAL : Int =12
+
+
+        const  val   RECHARGE : Int =13
+
+
+
+
 
     }
 
