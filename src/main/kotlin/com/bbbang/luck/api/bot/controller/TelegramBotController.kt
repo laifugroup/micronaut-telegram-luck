@@ -6,6 +6,7 @@ import com.bbbang.luck.api.bot.http.entity.TelegramRsp
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
 import com.bbbang.luck.configuration.properties.BotWebHookProperties
 import com.bbbang.parent.entities.Rsp
+import com.bbbang.parent.exception.BusinessException
 import com.bbbang.parent.rule.SecurityRules
 import io.micronaut.chatbots.core.Dispatcher
 import io.micronaut.chatbots.telegram.api.Update
@@ -85,11 +86,12 @@ class TelegramBotController
     @Post("/callback")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun callback(
-        @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String?,
+        @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String?
+        ,@Header("X-Real-Ip") realIp: String,
         @Body update: Update
     ): HttpResponse<Send> {
-        LOG.info("---begin callback")
         val botOptional = tokenValidator.validate(apiSecretToken)
+        LOG.info("realIp=${realIp} : botName=${botOptional?.get()?.atUsername} in chat=${update?.message?.chat?.id} with message=${update?.message?.text}")
         if (botOptional.isEmpty) {
             LOG.info("无效token:${apiSecretToken}")
             return HttpResponse.unauthorized()

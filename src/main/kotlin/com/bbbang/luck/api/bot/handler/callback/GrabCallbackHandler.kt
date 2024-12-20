@@ -80,7 +80,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         }
     }
      @Transactional
-     private fun handleMe(bot: TelegramBotConfiguration?, input: Update): Optional<Send>{
+     open fun handleMe(bot: TelegramBotConfiguration?, input: Update): Optional<Send>{
 
         val botUser = input.callbackQuery.from
         val locale = LocaleHelper.language(input)
