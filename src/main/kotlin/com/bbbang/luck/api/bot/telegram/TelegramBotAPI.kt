@@ -45,6 +45,33 @@ interface TelegramBotAPI {
     )
     : TelegramRsp<ChatInviteLink>
 
+    /**
+     * 发送红包雨的时候使用
+     */
+    @Post("/bot{httpApiToken}/sendPhoto")
+    @SingleResult
+    fun sendPhoto(@PathVariable("httpApiToken")httpApiToken:String,
+                             @QueryValue("chat_id") chatId:Long?
+                             ,@QueryValue("name") name:String?
+                             ,@QueryValue("expire_date") expireDate:Int?
+                             ,@QueryValue("member_limit") memberLimit:Int?
+                             ,@QueryValue("creates_join_request") createsJoinRequest:Boolean?,
+    )
+    : TelegramRsp<ChatInviteLink>
+
+    /**
+     * 开奖的时候使用
+     */
+    @Post("/bot{httpApiToken}/editMessageCaption")
+    @SingleResult
+    fun editMessageCaption(@PathVariable("httpApiToken")httpApiToken:String,
+                    @QueryValue("chat_id") chatId:Long?
+                    ,@QueryValue("name") name:String?
+                    ,@QueryValue("expire_date") expireDate:Int?
+                    ,@QueryValue("member_limit") memberLimit:Int?
+                    ,@QueryValue("creates_join_request") createsJoinRequest:Boolean?,
+    )
+    : TelegramRsp<ChatInviteLink>
 
 }
 

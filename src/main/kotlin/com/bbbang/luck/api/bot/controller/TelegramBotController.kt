@@ -90,8 +90,9 @@ class TelegramBotController
         ,@Header("X-Real-Ip") realIp: String,
         @Body update: Update
     ): HttpResponse<Send> {
+        println("realIp=${realIp} : in chat=${update.message?.chat?.id} with message=${update.message?.text}")
         val botOptional = tokenValidator.validate(apiSecretToken)
-        LOG.info("realIp=${realIp} : botName=${botOptional?.get()?.atUsername} in chat=${update?.message?.chat?.id} with message=${update?.message?.text}")
+       // LOG.info("realIp=${realIp} : botName=${botOptional?.get()?.atUsername} in chat=${update?.message?.chat?.id} with message=${update?.message?.text}")
         if (botOptional.isEmpty) {
             LOG.info("无效token:${apiSecretToken}")
             return HttpResponse.unauthorized()

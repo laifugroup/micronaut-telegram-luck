@@ -4,8 +4,10 @@ package com.bbbang.luck
 import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
 import com.bbbang.luck.configuration.properties.BotWebHookProperties
+import com.bbbang.luck.event.DivideRedPackEvent
 import com.bbbang.parent.helper.LicenseHelper
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lmax.disruptor.dsl.Disruptor
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.runtime.server.event.ServerStartupEvent
 import jakarta.inject.Inject
@@ -22,11 +24,19 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
     lateinit var objectMapper: ObjectMapper
     @Inject
     lateinit var botWebHookProperties: BotWebHookProperties
-
+    @Inject
+    lateinit var disruptor: Disruptor<DivideRedPackEvent>
 
     override fun onApplicationEvent(event: ServerStartupEvent?) {
         //registerLicense()
+       registerDisruptor()
        registerTelegram()
+    }
+
+
+
+    private fun registerDisruptor(){
+        disruptor.start()
     }
 
     private fun registerLicense(){

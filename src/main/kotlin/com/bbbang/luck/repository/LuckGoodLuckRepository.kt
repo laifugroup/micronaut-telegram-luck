@@ -19,5 +19,8 @@ interface LuckGoodLuckRepository: BasePageableRepository2<LuckGoodLuckPO>   {
    fun findByLuckRedPackId(luckRedPackId: Long?): List<LuckGoodLuckPO>
 
 
+   //UPDATE LuckGoodLuckPO t SET credit = :credit,lastNumber = :lastNumber where id = :id
+   fun   updateCreditAndLastNumberById(credit:Long?,lastNumber:Int?,id:Long?):Int
+
 }
 
