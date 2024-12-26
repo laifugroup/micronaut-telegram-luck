@@ -86,11 +86,12 @@ class TelegramBotController
     @Post("/callback")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun callback(
-        @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String?
-        ,@Header("X-Real-Ip") realIp: String,
-        @Body update: Update
+        @Header(TokenValidator.X_TELEGRAM_BOT_API_SECRET_TOKEN) apiSecretToken: String
+        ,@Header("X-Real-Ip") realIp: String?
+        ,@Header("X-Forwarded-For") realIp2: String?
+        ,@Body update: Update
     ): HttpResponse<Send> {
-        println("realIp=${realIp} : in chat=${update.message?.chat?.id} with message=${update.message?.text}")
+        println("realIp=${realIp} Forwarded $realIp2 : in chat=${update.message?.chat?.id} with message=${update.message?.text}")
         val botOptional = tokenValidator.validate(apiSecretToken)
        // LOG.info("realIp=${realIp} : botName=${botOptional?.get()?.atUsername} in chat=${update?.message?.chat?.id} with message=${update?.message?.text}")
         if (botOptional.isEmpty) {

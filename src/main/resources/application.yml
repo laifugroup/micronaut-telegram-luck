@@ -149,10 +149,10 @@ app:
   luck:
     bot:
       webhook:
-        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://89df-182-139-188-162.ngrok-free.app`}
+        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://8262-182-139-188-162.ngrok-free.app`}
         url: ${app.luck.bot.webhook.internalUrl}/telegramBot/callback
         secretToken: ${BOT_WEBHOOK_SECRET_TOKEN:`ceq0vd6p2ehd15jkxs62oedq55hu2qq8`}
-        httpApiToken: ${BOT_HTTP_API_TOKEN:`6968916542:AAFseuM2BiI1WhPI5YvIR32CTMyqYU6qyfU`}
+        httpApiToken: ${BOT_HTTP_API_TOKEN:`6968916542:AAEVoBm_NiOcSNlpimRwGMUmoKPWcspr-4w`}
     limitBid: ${BET_LIMIT_BID:`5000`}
     reservePrice:  ${BET_RESERVE_PRICE:`5`}
     withdrawalLimit:  ${BET_WITHDRAWAL_LIMIT:`10`}
