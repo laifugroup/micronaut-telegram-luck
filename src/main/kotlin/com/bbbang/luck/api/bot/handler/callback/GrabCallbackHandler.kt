@@ -35,6 +35,7 @@ import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
 import jakarta.inject.Singleton
 import jakarta.transaction.Transactional
+import reactor.core.publisher.Mono.delay
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.Lock
@@ -147,6 +148,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         //val redPack=input.callbackQuery.message.replyToMessage.text
         val addGrabNumber=counts+1
         val maxNumber=luckProperties.redPackNumbers
+
         val grabMessage=messageSource.getMessage("luck.grab.message",locale,maxNumber,addGrabNumber,total,boomNumber).orElse(
             LocaleHelper.EMPTY)
 
@@ -165,7 +167,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         val editMessageCaption=  EditMessageCaption(chatId=input.callbackQuery.message.chat.id,
             name = null,
             messageId = messageId,
-            caption = caption+"我是更新",
+            caption = caption,
             parseMode = ParseMode.MARKDOWN.toString()
         )
         editMessageCaption.replyMarkup = inlineKeyboard

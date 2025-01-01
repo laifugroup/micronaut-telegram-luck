@@ -23,7 +23,10 @@ data class LuckSendLuckPageDTO(
 	
     @field:Schema(description = "积分[100]",example = "1")
     var  credit:BigDecimal?=null,
-	
+
+    @field:Schema(description = "倍率[1.8]",example = "1.8")
+    var  odds:BigDecimal?=null,
+
     @field:Schema(description = "红包个数[6]",example = "1")
     var  redPackNumbers:Int?=null,
 	

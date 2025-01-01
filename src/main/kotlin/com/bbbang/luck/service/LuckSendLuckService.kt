@@ -1,5 +1,6 @@
 package com.bbbang.luck.service;
 
+import com.bbbang.luck.api.bot.type.SendLuckType
 import com.bbbang.luck.repository.LuckSendLuckRepository
 import com.bbbang.luck.domain.vo.LuckSendLuckVO
 import com.bbbang.luck.domain.bo.LuckSendLuckBO
@@ -16,6 +17,9 @@ import jakarta.inject.Singleton
 open class LuckSendLuckService(private val repository: LuckSendLuckRepository) 
 :BaseServiceImpl2<LuckSendLuckDTO, LuckSendLuckPageDTO, LuckSendLuckBO, LuckSendLuckPO, LuckSendLuckVO>(repository, LuckSendLuckMapper.MAPPER){
 
+    fun findUnSettledLuck():List<LuckSendLuckPO>{
+        return repository.findByStatusEquals(SendLuckType.UNSETTLED.code)
+    }
 
 
 }

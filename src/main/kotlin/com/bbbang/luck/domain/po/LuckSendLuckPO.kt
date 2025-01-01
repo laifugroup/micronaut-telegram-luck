@@ -34,7 +34,10 @@ data class LuckSendLuckPO(
     @field:Schema(description = "积分[100]",example = "1")
     @field:Comment("积分[100]")
     var  credit:BigDecimal?=null,
-	
+
+    @field:Schema(description = "倍率[1.8]",example = "1.8")
+    var  odds:BigDecimal?=null,
+
     @field:Schema(description = "红包个数[6]",example = "1")
     @field:Comment("红包个数[6]")
     var  redPackNumbers:Int?=null,
@@ -71,6 +74,7 @@ data class LuckSendLuckPO(
         return  listOf(
 				 PropertyMetadata("id", Long::class,this.id),
 				 PropertyMetadata("userId", Long::class,this.userId),
+                 PropertyMetadata("odds", Long::class,this.odds),
 				 PropertyMetadata("credit", BigDecimal::class,this.credit),
 				 PropertyMetadata("redPackNumbers", Int::class,this.redPackNumbers),
 				 PropertyMetadata("boomNumber", Int::class,this.boomNumber),

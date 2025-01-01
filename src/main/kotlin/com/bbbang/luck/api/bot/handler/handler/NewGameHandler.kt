@@ -104,6 +104,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
             this.redPackNumbers = luckProperties.redPackNumbers
             this.boomNumber = Integer.valueOf(boomNumber)
             this.credit = dollar
+            this.odds = luckProperties.odds
             this.firstName=input.message.from.firstName
             this.lastName=input.message.from.lastName
             this.userName=input.message.from.username

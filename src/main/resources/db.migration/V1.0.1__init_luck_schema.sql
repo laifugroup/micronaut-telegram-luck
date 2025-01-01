@@ -244,6 +244,7 @@ create table if not exists "luck"."luck_send_luck" (
       "red_pack_numbers"  int  not null  default 6,
       "boom_number"  int  not null,
       "group_id"  BIGINT  NULL,
+      "odds"  numeric  NOT NULL,
       "first_name" varchar(126)   null,
       "last_name"  varchar(126)   null,
       "user_name"  varchar(126)   null,
@@ -260,11 +261,13 @@ comment on column "luck"."luck_send_luck".user_id is '用户ID[15416933334354534
 comment on column "luck"."luck_send_luck".credit is '积分[100]';
 comment on column "luck"."luck_send_luck".red_pack_numbers is '红包个数[6]';
 comment on column "luck"."luck_send_luck".boom_number is '中雷数字[1]';
+comment on column "luck"."luck_send_luck".group_id is '博弈组ID[112333222]';
+comment on column "luck"."luck_send_luck".odds is '倍率[1.8]';
 comment on column "luck"."luck_send_luck".first_name is '名字[san]';
 comment on column "luck"."luck_send_luck".last_name is '姓[zhang]';
 comment on column "luck"."luck_send_luck".user_name is '用户名[laowang]';
 comment on column "luck"."luck_send_luck".status is '状态[1-已结算,2-未结算,3-已过期,4-已撤销]';
-comment on column "luck"."luck_send_luck".group_id is '博弈组ID[112333222]';
+
 
 comment on column "luck"."luck_send_luck".created_at is '创建时间';
 comment on column "luck"."luck_send_luck".updated_at is '更新时间';

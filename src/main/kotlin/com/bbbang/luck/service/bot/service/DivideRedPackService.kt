@@ -50,7 +50,7 @@ class DivideRedPackService (
        val redPackId=sendRedPackVO?.id ?:throw BusinessException("[redPackId]红包ID参数不能为空")
        val amount= sendRedPackVO.credit ?:throw BusinessException("[amount]金额参数不能为空")
        val numbers= sendRedPackVO.redPackNumbers ?:throw BusinessException("[numbers]红包个数不能为空")
-       val oddsCredit=divideRedPackEvent.oddsCredit?:throw BusinessException("[oddsCredit]保证金参数不能为空")
+       val oddsCredit=sendRedPackVO.odds?:throw BusinessException("[oddsCredit]保证金参数不能为空")
 
 
        val goodLuckList= luckGoodLuckService.findByLuckRedPackId(redPackId)

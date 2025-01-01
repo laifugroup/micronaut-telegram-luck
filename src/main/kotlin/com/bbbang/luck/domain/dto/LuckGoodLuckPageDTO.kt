@@ -21,10 +21,7 @@ data class LuckGoodLuckPageDTO(
     @field:JsonSerialize(using = ToStringSerializer::class)
     var  luckRedPackId:Long?=null,
 	
-    @field:Schema(description = "发红包人[1541693333435453411]",type="string",example = "1339468674200637453")
-    @field:JsonSerialize(using = ToStringSerializer::class)
-    var  sendRedPackUserId:Long?=null,
-	
+
     @field:Schema(description = "用户ID[1541693333435453411]",type="string",example = "1339468674200637453")
     @field:JsonSerialize(using = ToStringSerializer::class)
     var  userId:Long?=null,

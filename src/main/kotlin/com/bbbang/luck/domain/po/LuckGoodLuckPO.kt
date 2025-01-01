@@ -31,10 +31,7 @@ data class LuckGoodLuckPO(
     @field:Comment("红包ID[1541693333435453411]")
     var  luckRedPackId:Long?=null,
 	
-    @field:Schema(description = "发红包人[1541693333435453411]",type="string",example = "1339468674200637453")
-    @field:JsonSerialize(using = ToStringSerializer::class)
-    @field:Comment("发红包人[1541693333435453411]")
-    var  sendRedPackUserId:Long?=null,
+
 	
     @field:Schema(description = "用户ID[1541693333435453411]",type="string",example = "1339468674200637453")
     @field:JsonSerialize(using = ToStringSerializer::class)
@@ -81,7 +78,6 @@ data class LuckGoodLuckPO(
         return  listOf(
 				 PropertyMetadata("id", Long::class,this.id),
 				 PropertyMetadata("luckRedPackId", Long::class,this.luckRedPackId),
-				 PropertyMetadata("sendRedPackUserId", Long::class,this.sendRedPackUserId),
 				 PropertyMetadata("userId", Long::class,this.userId),
 				 PropertyMetadata("groupId", Long::class,this.groupId),
 				 PropertyMetadata("firstName", String::class,this.firstName),
