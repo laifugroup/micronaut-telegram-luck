@@ -170,64 +170,8 @@ class DivideRedPackService (
         }
         //保存明细记录
         luckCreditLogRepository.saveAll(creditLogPOList)
-//        session.persist(*creditLogPOList.toTypedArray()).thenApply {
-//            goodLuckList
-//        }
+
 
     }
-
-//    private  fun sendLuckMessage(absSender: LuckBot, callbackQuery: CallbackQuery?, odds:BigDecimal, sendRedPack: LuckSendLuckVO?, goodLuckList:List<LuckGoodLuckPO>) {
-//        val locale = callbackQuery?.from?.languageCode?.let { Locale.forLanguageTag(it) } ?: Locale.ENGLISH
-//        val decimalFormat=DecimalFormat("#.00")
-//        val luckResultOver = messageSource.getMessage(
-//            "luck.result.over",
-//            locale,
-//            sendRedPack?.firstName ?: "",
-//            sendRedPack?.userId,
-//            sendRedPack?.credit,
-//            luckProperties.redPackNumbers,
-//            luckProperties.odds,
-//            sendRedPack?.boomNumber
-//        ).orElse(I18nConstants.constants)
-//
-//        //2.
-//        val luckResultItems = StringBuilder()
-//        luckResultItems.append("`")
-//        val boomFlag=messageSource.getMessage("luck.result.item.boom", locale, ).orElse(I18nConstants.constants)
-//        val usdFlag=messageSource.getMessage("luck.result.item.usd", locale, ).orElse(I18nConstants.constants)
-//
-//        goodLuckList.forEach{goodLuck ->
-//            val boom=goodLuck?.lastNumber==sendRedPack?.boomNumber
-//            val   luckResultItem=messageSource.getMessage(
-//                "luck.result.item",locale,
-//                if (boom)  boomFlag  else usdFlag,
-//                decimalFormat.format(goodLuck.credit),
-//                if (goodLuck.firstName?.length?:0 <=5) goodLuck.firstName else "${goodLuck.firstName?.substring(0,5)}..",
-//            ).orElse(I18nConstants.constants)
-//            luckResultItems.append(luckResultItem)
-//        }
-//        luckResultItems.append("`")
-//        //3.
-//        val sendUserLuck= goodLuckList.filter { it.boomNumber == it.lastNumber }.sumOf { odds }
-//        val cost = sendRedPack?.credit
-//        val amountReceived = sendUserLuck.minus(cost!!)
-//        val luckResultCost = messageSource.getMessage("luck.result.cost", locale, sendUserLuck, "-${cost}", amountReceived,goodLuckList.map { it.lastNumber }.joinToString("-")).orElse(I18nConstants.constants)
-//
-//        val replayLuckMessage = "$luckResultOver$luckResultItems$luckResultCost"
-//        val replyMarkup = callbackQuery?.message?.replyMarkup
-//        replyMarkup?.keyboard?.removeAt(0)
-//
-//        val editMessage = EditMessageCaption.builder()
-//            .chatId(callbackQuery?.message?.chatId)
-//            .messageId(callbackQuery?.message?.messageId)
-//            .caption(replayLuckMessage)
-//            .parseMode(ParseMode.MARKDOWN)
-//            .replyMarkup(replyMarkup)
-//            .build()
-//
-//        val result = absSender.executeAsync(editMessage)
-//
-//    }
-//
 
 }

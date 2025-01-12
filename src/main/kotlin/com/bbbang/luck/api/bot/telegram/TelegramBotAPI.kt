@@ -4,11 +4,17 @@ import com.bbbang.luck.api.bot.http.entity.GetWebhookInfo
 import com.bbbang.luck.api.bot.http.entity.TelegramRsp
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.chatbots.telegram.api.ChatInviteLink
+import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
+import io.micronaut.chatbots.telegram.api.send.SendPhoto
+import io.micronaut.context.annotation.Parameter
+import io.micronaut.core.annotation.NonNull
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.QueryValue
+import io.micronaut.http.annotation.RequestBean
 import io.micronaut.http.client.annotation.Client
+import jakarta.validation.constraints.NotNull
 
 /**
  *
@@ -48,16 +54,24 @@ interface TelegramBotAPI {
     /**
      * 发送红包雨的时候使用
      */
+
     @Post("/bot{httpApiToken}/sendPhoto")
     @SingleResult
-    fun sendPhoto(@PathVariable("httpApiToken")httpApiToken:String,
-                             @QueryValue("chat_id") chatId:Long?
-                             ,@QueryValue("name") name:String?
-                             ,@QueryValue("expire_date") expireDate:Int?
-                             ,@QueryValue("member_limit") memberLimit:Int?
-                             ,@QueryValue("creates_join_request") createsJoinRequest:Boolean?,
+    fun sendPhoto(@PathVariable("httpApiToken")httpApiToken:String
+                  ,@QueryValue("chat_id") chatId:Long?
+                  , @QueryValue("photo") photo:String?
+                  , @QueryValue("caption") caption:String?
+                  , @QueryValue("parse_mode") parseMode:String?
+                  , @QueryValue("reply_markup") replyMarkup: String?,
     )
-    : TelegramRsp<ChatInviteLink>
+    : TelegramRsp<SendPhotoRsp>
+
+
+    @Post("/bot{httpApiToken}/sendPhoto")
+    @SingleResult
+    fun sendPhoto2(@PathVariable("httpApiToken")httpApiToken:String
+                  ,@QueryValue  sendPhoto: SendPhotoParams
+    ): TelegramRsp<SendPhotoRsp>
 
     /**
      * 开奖的时候使用
@@ -65,13 +79,19 @@ interface TelegramBotAPI {
     @Post("/bot{httpApiToken}/editMessageCaption")
     @SingleResult
     fun editMessageCaption(@PathVariable("httpApiToken")httpApiToken:String,
-                    @QueryValue("chat_id") chatId:Long?
-                    ,@QueryValue("name") name:String?
-                    ,@QueryValue("expire_date") expireDate:Int?
-                    ,@QueryValue("member_limit") memberLimit:Int?
-                    ,@QueryValue("creates_join_request") createsJoinRequest:Boolean?,
+                           @JsonProperty("chat_id")
+                            chatId: Long?,
+                           @JsonProperty("inline_message_id")
+                            inlineMessageId: Int?=null,
+                            caption: String? = null,
+                           @JsonProperty("parse_mode")
+                            parseMode: String? = null,
+                           @JsonProperty("caption_entities")
+                            captionEntities: String? = null,
+                           @JsonProperty("reply_markup")
+                           replyMarkup: String? = null,
     )
-    : TelegramRsp<ChatInviteLink>
+    : TelegramRsp<EditMessageCaptionRsp>
 
 }
 

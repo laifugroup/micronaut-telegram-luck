@@ -1,16 +1,24 @@
 package com.bbbang.luck.api.bot.controller
 
-import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
+import com.bbbang.luck.api.bot.core.CallbackData
 import com.bbbang.luck.api.bot.http.entity.GetWebhookInfo
 import com.bbbang.luck.api.bot.http.entity.TelegramRsp
+import com.bbbang.luck.api.bot.telegram.*
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
 import com.bbbang.luck.configuration.properties.BotWebHookProperties
+import com.bbbang.luck.helper.InlineKeyboardMarkupHelper
 import com.bbbang.parent.entities.Rsp
 import com.bbbang.parent.exception.BusinessException
 import com.bbbang.parent.rule.SecurityRules
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.chatbots.core.Dispatcher
+import io.micronaut.chatbots.telegram.api.ChatInviteLink
+import io.micronaut.chatbots.telegram.api.InlineKeyboardButton
+import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
 import io.micronaut.chatbots.telegram.api.Update
+import io.micronaut.chatbots.telegram.api.send.ParseMode
 import io.micronaut.chatbots.telegram.api.send.Send
+import io.micronaut.chatbots.telegram.api.send.SendPhoto
 import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TokenValidator
 import io.micronaut.chatbots.telegram.http.TelegramController
@@ -56,7 +64,8 @@ class TelegramBotController
     (private val tokenValidator: TokenValidator,
      private val dispatcher: Dispatcher<TelegramBotConfiguration, Update, Send>,
      private val telegramAPI: TelegramBotAPI,
-     private val botWebHookProperties: BotWebHookProperties
+     private val botWebHookProperties: BotWebHookProperties,
+     private val objectMapper: ObjectMapper,
 ) {
 
     /**
@@ -135,7 +144,41 @@ class TelegramBotController
     }
 
 
+    @Get("/sendMessage")
+    @Secured(value = [SecurityRules.IS_ANONYMOUS])
+    fun sendMessage(): Rsp<TelegramRsp<SendPhotoRsp>> {
 
+         val keyboard= InlineKeyboardMarkup()
+
+        val aaa=InlineKeyboardButton().apply {
+            text="grabMessage"
+            callbackData=CallbackData.GRAB_RED_PACKET
+        }
+        keyboard.inlineKeyboard= listOf(listOf(aaa),listOf(aaa,aaa))
+        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
+
+        val httpApiToken=botWebHookProperties.httpApiToken
+        val rsp=  telegramAPI.sendPhoto(httpApiToken,-1002373808553,
+            "https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png","主动发信息模式",ParseMode.MARKDOWN.toString()
+            ,inlineKeyboard)
+        return Rsp.success(rsp)
+    }
+
+    @Get("/editMessageCaption")
+    @Secured(value = [SecurityRules.IS_ANONYMOUS])
+    fun editMessageCaption(): Rsp<TelegramRsp<EditMessageCaptionRsp>> {
+        val keyboard= InlineKeyboardMarkup()
+        val aaa=InlineKeyboardButton().apply {
+            text="haha111"
+            callbackData=CallbackData.GRAB_RED_PACKET
+        }
+        keyboard.inlineKeyboard= listOf(listOf(aaa),listOf(aaa,aaa))
+        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
+
+        val rsp=telegramAPI.editMessageCaption(httpApiToken=botWebHookProperties.httpApiToken
+            ,-1002373808553,0,"我是编辑内容",ParseMode.MARKDOWN.toString(),inlineKeyboard)
+        return Rsp.success(rsp)
+    }
 
     companion object {
         private val LOG = LoggerFactory.getLogger(TelegramController::class.java)

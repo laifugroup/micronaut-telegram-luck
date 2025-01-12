@@ -20,7 +20,7 @@ data class LuckActivityDTO(
     var  activityCode:String?=null,
 	
 
-    @field:Schema(description = "积分[100]",example = "1",required=true)
+    @field:Schema(description = "积分[100]", example = "1",required=true)
     var  credit:BigDecimal?=null,
 	
 
