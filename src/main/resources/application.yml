@@ -149,7 +149,7 @@ app:
   luck:
     bot:
       webhook:
-        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://4b57-182-139-190-172.ngrok-free.app`}
+        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://059f-182-139-190-172.ngrok-free.app`}
         url: ${app.luck.bot.webhook.internalUrl}/telegramBot/callback
         secretToken: ${BOT_WEBHOOK_SECRET_TOKEN:`ceq0vd6p2ehd15jkxs62oedq55hu2qq8`}
         httpApiToken: ${BOT_HTTP_API_TOKEN:`6968916542:AAEVoBm_NiOcSNlpimRwGMUmoKPWcspr-4w`}

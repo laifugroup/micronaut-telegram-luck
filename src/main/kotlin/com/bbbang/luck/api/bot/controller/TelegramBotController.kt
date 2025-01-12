@@ -100,7 +100,7 @@ class TelegramBotController
         ,@Header("X-Forwarded-For") realIp2: String?
         ,@Body update: Update
     ): HttpResponse<Send> {
-        println("realIp=${realIp} Forwarded $realIp2 : in chat=${update.message?.chat?.id} with message=${update.message?.text}")
+        println("realIp=${realIp} Forwarded $realIp2 : in chat=${update.message?.chat?.id} with message=${update.message?.messageId}")
         val botOptional = tokenValidator.validate(apiSecretToken)
        // LOG.info("realIp=${realIp} : botName=${botOptional?.get()?.atUsername} in chat=${update?.message?.chat?.id} with message=${update?.message?.text}")
         if (botOptional.isEmpty) {
@@ -164,6 +164,10 @@ class TelegramBotController
         return Rsp.success(rsp)
     }
 
+    /**
+     * 只能编辑自己发送的信息。
+     */
+
     @Get("/editMessageCaption")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun editMessageCaption(): Rsp<TelegramRsp<EditMessageCaptionRsp>> {
@@ -176,7 +180,8 @@ class TelegramBotController
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 
         val rsp=telegramAPI.editMessageCaption(httpApiToken=botWebHookProperties.httpApiToken
-            ,-1002373808553,0,"我是编辑内容",ParseMode.MARKDOWN.toString(),inlineKeyboard)
+            ,-1002373808553,39,"我是编辑内容",parseMode=ParseMode.MARKDOWN.toString()
+            ,replyMarkup=inlineKeyboard)
         return Rsp.success(rsp)
     }
 

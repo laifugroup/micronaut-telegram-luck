@@ -79,16 +79,15 @@ interface TelegramBotAPI {
     @Post("/bot{httpApiToken}/editMessageCaption")
     @SingleResult
     fun editMessageCaption(@PathVariable("httpApiToken")httpApiToken:String,
-                           @JsonProperty("chat_id")
-                            chatId: Long?,
-                           @JsonProperty("inline_message_id")
-                            inlineMessageId: Int?=null,
+                           @QueryValue("chat_id")
+                            chatId: Long,
+                           @QueryValue("message_id")
+                            messageId: Int,
+                           @QueryValue("caption")
                             caption: String? = null,
-                           @JsonProperty("parse_mode")
+                           @QueryValue("parse_mode")
                             parseMode: String? = null,
-                           @JsonProperty("caption_entities")
-                            captionEntities: String? = null,
-                           @JsonProperty("reply_markup")
+                           @QueryValue("reply_markup")
                            replyMarkup: String? = null,
     )
     : TelegramRsp<EditMessageCaptionRsp>
