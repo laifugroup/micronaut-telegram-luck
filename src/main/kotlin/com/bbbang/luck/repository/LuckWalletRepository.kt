@@ -17,7 +17,7 @@ interface LuckWalletRepository: BasePageableRepository2<LuckWalletPO>   {
 
     fun findByUserIdInList(@NonNull userIdList: List<Long?>): List<LuckWalletPO>
 
-    @Query("UPDATE LuckWalletPO t SET t.credit = :credit where t.id = :id")
+    @Query("UPDATE LuckWalletPO t SET t.credit = :credit + t.credit where t.id = :id")
     fun updateCreditById(credit: BigDecimal?,id:Long?):Int
 
 //UPDATE LuckWalletPO t SET credit = :credit where userId = :userId

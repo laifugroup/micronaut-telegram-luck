@@ -107,6 +107,7 @@ class TelegramBotController
             LOG.info("无效token:${apiSecretToken}")
             return HttpResponse.unauthorized()
         }
+        //存储数据 不存储，等需要存储的时候，才储存数据
         return dispatcher.dispatch(botOptional.get(), update)
             .map<MutableHttpResponse<Send>> {
                 body: Send? -> HttpResponse.ok(body)

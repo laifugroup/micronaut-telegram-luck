@@ -47,7 +47,7 @@ open class GameReportCallbackHandler(private val spaceParser: SpaceParser<Update
             ?.minus(it.sendSum?: BigDecimal.ZERO)?.minus(it.boomSum?:BigDecimal.ZERO)
 
         val luckGameReport = messageSource.getMessage( "luck.game.report",LocaleHelper.language(input),
-            today,profit,(it.sendSum?:BigDecimal.ZERO)?.negate(),it.compensationSum?:BigDecimal.ZERO,it.grabSum?:BigDecimal.ZERO,(it.boomSum?: BigDecimal.ZERO)?.negate())
+            today,profit,(it.sendSum?:BigDecimal.ZERO)?.negate()?.toDouble(),it.compensationSum?:BigDecimal.ZERO,it.grabSum?:BigDecimal.ZERO,(it.boomSum?: BigDecimal.ZERO)?.negate())
             .orElse(LocaleHelper.EMPTY)
 
         val answerCallbackQuery = AnswerCallbackQuery(input.callbackQuery.id, luckGameReport, true, null, null)

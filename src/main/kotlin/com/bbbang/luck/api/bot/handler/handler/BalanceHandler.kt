@@ -18,6 +18,7 @@ import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
 import jakarta.inject.Singleton
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Singleton
 open class BalanceHandler(private val spaceParser: SpaceParser<Update, Chat>
@@ -38,15 +39,31 @@ open class BalanceHandler(private val spaceParser: SpaceParser<Update, Chat>
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<SendMessage>{
+        //不允许机器人
+        if (input?.message?.from?.bot == true) {
+            return Optional.empty()
+        }
+        //不允许私聊中执行指令
+        if (input?.message?.from?.id == input?.message?.chat?.id) {
+            val privateChatCommandMessage =
+                messageSource.getMessage("private.chat.bot.command", LocaleHelper.language(input))
+                    .orElse(LocaleHelper.EMPTY)
+            return SendMessageUtils.compose(spaceParser, input, privateChatCommandMessage)
+        }
+
+        val chat= spaceParser.parse(input)
+
        val wallet= luckWalletService.findWalletByUserId(input.message?.from?.id,input.message?.chat?.id)
         val credit= wallet.credit
         val userId=wallet.userId
-        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)
+        val creditValue = credit?.toDouble() ?: 0.0
+        val formattedCredit = String.format("%.2f", creditValue)
+        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input), userId, formattedCredit)
             .orElse(LocaleHelper.EMPTY)
 
        // val sendMessage=   SendMessageUtils.compose(spaceParser,input,luckBalance,ParseMode.MARKDOWN)
         val sendMessage =  SendMessage().apply {
-            chatId = input.message?.chat?.id.toString()
+            chatId = chat.getOrNull()?.id.toString()
             replyToMessageId=input.message?.messageId?.toString()
             text=luckBalance
             parseMode=ParseMode.MARKDOWN.toString()

@@ -35,10 +35,13 @@ open class BalanceCallbackHandler(private val spaceParser: SpaceParser<Update, C
     }
 
     override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<AnswerCallbackQuery>{
+
        val wallet= luckWalletService.findWalletByUserId(input.callbackQuery?.from?.id,input.callbackQuery?.message?.chat?.id)
         val credit= wallet.credit
         val userId=wallet.userId
-        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,credit)
+        val creditValue = credit?.toDouble()
+        val formattedCredit = String.format("%.2f", creditValue)
+        val luckBalance = messageSource.getMessage("luck.balance", LocaleHelper.language(input),userId,formattedCredit)
             .orElse(LocaleHelper.EMPTY)
         val answerCallbackQuery = AnswerCallbackQuery(input.callbackQuery.id, luckBalance, true, null, null)
         return Optional.of(answerCallbackQuery)

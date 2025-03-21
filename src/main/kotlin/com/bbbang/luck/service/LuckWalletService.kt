@@ -40,8 +40,11 @@ open class LuckWalletService(private val repository: LuckWalletRepository)
         return repository.findByUserIdInList(userIdList)
     }
 
-    fun updateCreditById(credit: BigDecimal?, id:Long?):Int{
-        return repository.updateCreditById(credit,id)
+    /**
+     * 更新值 不是更新以后的值
+     */
+    fun updateCreditById(addCredit: BigDecimal?, id:Long?):Int{
+        return repository.updateCreditById(addCredit,id)
     }
 
 }

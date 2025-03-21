@@ -24,10 +24,8 @@ import io.micronaut.chatbots.telegram.api.Chat
 import io.micronaut.chatbots.telegram.api.InlineKeyboardButton
 import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
 import io.micronaut.chatbots.telegram.api.Update
-import io.micronaut.chatbots.telegram.api.send.ParseMode
-import io.micronaut.chatbots.telegram.api.send.Send
-import io.micronaut.chatbots.telegram.api.send.SendMessage
-import io.micronaut.chatbots.telegram.api.send.SendPhoto
+import io.micronaut.chatbots.telegram.api.send.*
+import io.micronaut.chatbots.telegram.core.SendMessageUtils
 import io.micronaut.chatbots.telegram.core.TelegramBotConfiguration
 import io.micronaut.chatbots.telegram.core.TelegramHandler
 import io.micronaut.context.MessageSource
@@ -36,6 +34,7 @@ import jakarta.inject.Singleton
 import jakarta.transaction.Transactional
 import java.math.BigDecimal
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Singleton
 open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
@@ -62,8 +61,21 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
     }
 
     @Transactional
-    override fun handle(bot: TelegramBotConfiguration?, input: Update): @NonNull Optional<Send> {
+    override fun handle(bot: TelegramBotConfiguration?, input: Update): Optional<Send> {
+        //不允许机器人
+        if (input?.message?.from?.bot == true) {
+            return Optional.empty()
+        }
+        //不允许私聊中执行指令
+        if (input?.message?.from?.id == input?.message?.chat?.id) {
+            val privateChatCommandMessage =
+                messageSource.getMessage("private.chat.bot.command", LocaleHelper.language(input))
+                    .orElse(LocaleHelper.EMPTY)
+            return SendMessageUtils.compose(spaceParser, input, privateChatCommandMessage) as Optional<Send>
+        }
 
+        val chat= spaceParser.parse(input)
+        //业务逻辑
         val (total, boomNumber) = input.message.text.split("[-|/]".toRegex()).take(2)
         //限制发红包金额
         val dollar = BigDecimal.valueOf(total.toDouble())
@@ -74,7 +86,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
                 .orElse(LocaleHelper.EMPTY)
             val sendMessage=SendMessage().apply {
                 this.text=luckLimitAmount
-                this.chatId=input.message.chat.id.toString()
+                this.chatId=chat.getOrNull()?.id?.toString()
                 this.replyToMessageId=input.message.messageId.toString()
                 this.parseMode=ParseMode.MARKDOWN.toString()
             }
@@ -87,7 +99,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
                 input.message?.from?.firstName,input.message?.from?.id,wallet.credit,tronProperties.rechargeAddress).orElse(LocaleHelper.EMPTY)
             val sendMessage=SendMessage().apply {
                 this.text=luckInsufficientBalance
-                this.chatId=input.message.chat.id.toString()
+                this.chatId=chat.getOrNull()?.id.toString()
                 this.replyToMessageId=input.message.messageId.toString()
                 this.parseMode=ParseMode.MARKDOWN.toString()
             }
@@ -143,7 +155,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
        //SendPhotoUtils.compose(spaceParser,input,photo,caption,inlineKeyboard, ParseMode.MARKDOWN)
         return Optional.of(SendPhoto().apply {
-            this.chatId = input.message.chat.id.toString()
+            this.chatId=chat.getOrNull()?.id?.toString()
             this.photo = luckProperties.redPackUrl
             this.caption=caption
             this.replyMarkup=inlineKeyboard

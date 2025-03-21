@@ -29,8 +29,9 @@ interface Ordered {
         const  val   RECHARGE : Int =13
 
 
+        const  val  RECHARGE_APPLY :Int = 14
 
-
+        const  val  WITHDRAWAL_APPLY :Int = 15
 
     }
 
