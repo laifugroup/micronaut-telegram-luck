@@ -8,7 +8,7 @@ import com.bbbang.luck.domain.dto.LuckUserPageDTO
 import com.bbbang.luck.domain.po.LuckGoodLuckPO
 import com.bbbang.luck.domain.po.LuckUserPO
 import com.bbbang.luck.mapper.LuckUserMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Singleton
 import reactor.core.publisher.Flux

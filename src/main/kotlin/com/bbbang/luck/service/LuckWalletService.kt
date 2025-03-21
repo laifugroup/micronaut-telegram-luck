@@ -8,7 +8,7 @@ import com.bbbang.luck.domain.dto.LuckWalletPageDTO
 import com.bbbang.luck.domain.po.LuckWalletPO
 import com.bbbang.luck.domain.type.WalletStatus
 import com.bbbang.luck.mapper.LuckWalletMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import io.micronaut.core.annotation.NonNull
 import jakarta.inject.Singleton

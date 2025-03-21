@@ -7,7 +7,7 @@ import com.bbbang.luck.domain.dto.LuckBotPageDTO
 import com.bbbang.luck.domain.po.LuckBotPO
 import com.bbbang.luck.domain.vo.LuckBotVO
 import com.bbbang.luck.mapper.LuckBotMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Singleton
 

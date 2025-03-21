@@ -7,7 +7,7 @@ import com.bbbang.luck.domain.dto.LuckGoodLuckDTO
 import com.bbbang.luck.domain.dto.LuckGoodLuckPageDTO
 import com.bbbang.luck.domain.po.LuckGoodLuckPO
 import com.bbbang.luck.mapper.LuckGoodLuckMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import io.micronaut.core.annotation.NonNull
 import jakarta.inject.Singleton

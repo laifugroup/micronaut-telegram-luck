@@ -1,6 +1,6 @@
 package com.bbbang.luck.repository;
 import com.bbbang.luck.domain.po.LuckCreditApplyPO
-import com.bbbang.parent.repository.BaseReactorPageableRepository
+
 import com.bbbang.parent.repository2.BasePageableRepository2
 import io.micronaut.core.annotation.NonNull
 import io.micronaut.data.annotation.Id

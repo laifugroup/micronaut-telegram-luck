@@ -1,6 +1,6 @@
 package com.bbbang.luck.repository;
 import com.bbbang.luck.domain.po.LuckGoodLuckPO
-import com.bbbang.parent.repository.BaseReactorPageableRepository
+
 import com.bbbang.parent.repository2.BasePageableRepository2
 import io.micronaut.data.annotation.Repository
 import io.micronaut.data.annotation.RepositoryConfiguration

@@ -3,8 +3,8 @@ micronaut:
     client:
       default-charset: UTF-8
       log-level: trace
-      proxy-address: http://127.0.0.1:33210
-      proxy-type: http
+#      proxy-address: http://127.0.0.1:33210
+#      proxy-type: http
 
     services:
       telegram:
@@ -62,7 +62,7 @@ micronaut:
               url: ${OAUTH2_KEYS:`http://localhost:1910/keys`}
               cache-expiration: 3600
         claims-validators:
-          issuer: "oauth2-vertx"
+          issuer: "micronaut-oauth2-prod"
           expiration: true
         enabled: true
   router:
@@ -106,10 +106,10 @@ jpa:
         - com.bbbang.luck.domain.po
 datasources:
   default:
-    driver-class-name: org.postgresql.Driver
-    db-type: postgres
-    dialect: POSTGRES
-    url: "jdbc:postgresql://${vertx.pg.client.host}:${vertx.pg.client.port}/${vertx.pg.client.database}?ssl=${vertx.pg.client.ssl}&sslmode=${vertx.pg.client.ssl-mode}"
+    driver-class-name: org.h2.Driver
+    db-type: h2
+    dialect: H2
+    url: "jdbc:h2:file:./LuckDB;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS `luck`"
     username: ${vertx.pg.client.user}
     password: ${vertx.pg.client.password}
     schema: ${app.db.schema:`luck`}
@@ -138,7 +138,8 @@ vertx:
 flyway:
   datasources:
     default:
-      enabled: false
+      enabled: true
+      locations: classpath:db/migration
 
 tron:
   url: "https://api.trongrid.io" # https://api.shasta.trongrid.io    	https://nile.trongrid.io
@@ -149,7 +150,7 @@ app:
   luck:
     bot:
       webhook:
-        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://059f-182-139-190-172.ngrok-free.app`}
+        internalUrl: ${BOT_WEBHOOK_INTERNAL_URL:`https://2fd2-138-19-245-253.ngrok-free.app`}
         url: ${app.luck.bot.webhook.internalUrl}/telegramBot/callback
         secretToken: ${BOT_WEBHOOK_SECRET_TOKEN:`ceq0vd6p2ehd15jkxs62oedq55hu2qq8`}
         httpApiToken: ${BOT_HTTP_API_TOKEN:`6968916542:AAEVoBm_NiOcSNlpimRwGMUmoKPWcspr-4w`}

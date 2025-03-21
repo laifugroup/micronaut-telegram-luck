@@ -9,7 +9,6 @@ import com.bbbang.luck.domain.dto.LuckActivityPageDTO
 import com.bbbang.luck.domain.po.LuckActivityPO
 import com.bbbang.luck.domain.type.ActivityType
 import com.bbbang.luck.mapper.LuckActivityMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

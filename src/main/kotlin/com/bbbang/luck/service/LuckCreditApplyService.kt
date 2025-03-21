@@ -14,7 +14,7 @@
 //import com.bbbang.luck.domain.type.UpDownCreditType
 //import com.bbbang.luck.mapper.LuckCreditApplyMapper
 //import com.bbbang.parent.exception.BusinessException
-//import com.bbbang.parent.service.impl.BaseServiceImpl
+//
 //import com.bbbang.parent.service2.impl.BaseServiceImpl2
 //import com.bbbang.parent.utils.BigDecimalUtils
 //import jakarta.inject.Inject

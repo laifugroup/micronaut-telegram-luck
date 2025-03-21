@@ -8,7 +8,7 @@ import com.bbbang.luck.domain.dto.LuckSendLuckDTO
 import com.bbbang.luck.domain.dto.LuckSendLuckPageDTO
 import com.bbbang.luck.domain.po.LuckSendLuckPO
 import com.bbbang.luck.mapper.LuckSendLuckMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Singleton
 

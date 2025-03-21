@@ -8,7 +8,7 @@ import com.bbbang.luck.domain.dto.UserAnalysisHourDTO
 import com.bbbang.luck.domain.dto.UserAnalysisHourPageDTO
 import com.bbbang.luck.domain.po.UserAnalysisHourPO
 import com.bbbang.luck.mapper.UserAnalysisHourMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

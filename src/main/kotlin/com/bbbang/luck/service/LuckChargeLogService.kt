@@ -7,7 +7,7 @@ import com.bbbang.luck.domain.dto.LuckChargeLogDTO
 import com.bbbang.luck.domain.dto.LuckChargeLogPageDTO
 import com.bbbang.luck.domain.po.LuckChargeLogPO
 import com.bbbang.luck.mapper.LuckChargeLogMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Singleton
 

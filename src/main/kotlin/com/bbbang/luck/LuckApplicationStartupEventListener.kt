@@ -28,7 +28,7 @@ open class LuckApplicationStartupEventListener: ApplicationEventListener<ServerS
     lateinit var disruptor: Disruptor<DivideRedPackEvent>
 
     override fun onApplicationEvent(event: ServerStartupEvent?) {
-        //registerLicense()
+        registerLicense()
        registerDisruptor()
        registerTelegram()
     }

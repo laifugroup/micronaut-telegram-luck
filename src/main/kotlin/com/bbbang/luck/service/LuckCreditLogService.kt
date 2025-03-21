@@ -11,7 +11,7 @@ import com.bbbang.luck.domain.vo.AgentDaysStatisticsVO
 import com.bbbang.luck.domain.vo.DaysStatisticsVO
 import com.bbbang.luck.domain.vo.WaterStatisticsVO
 import com.bbbang.luck.mapper.LuckCreditLogMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono

@@ -9,7 +9,7 @@ import com.bbbang.luck.domain.dto.LuckUserRechargeWalletPageDTO
 import com.bbbang.luck.domain.po.LuckUserRechargeWalletPO
 import com.bbbang.luck.domain.type.UserRechargeWalletType
 import com.bbbang.luck.mapper.LuckUserRechargeWalletMapper
-import com.bbbang.parent.service.impl.BaseServiceImpl
+
 import com.bbbang.parent.service2.impl.BaseServiceImpl2
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

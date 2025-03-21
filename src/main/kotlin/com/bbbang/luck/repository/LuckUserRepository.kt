@@ -2,7 +2,7 @@ package com.bbbang.luck.repository;
 import com.bbbang.luck.domain.po.LuckUserHourPO
 import com.bbbang.luck.domain.po.LuckUserPO
 import com.bbbang.luck.domain.po.LuckWalletPO
-import com.bbbang.parent.repository.BaseReactorPageableRepository
+
 import com.bbbang.parent.repository2.BasePageableRepository2
 import io.micronaut.core.annotation.NonNull
 import io.micronaut.data.annotation.Query
