@@ -7,6 +7,7 @@ import io.micronaut.core.annotation.Introspected
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 import jakarta.validation.constraints.*
+import org.hibernate.annotations.Comment
 import java.math.BigDecimal
 
 @Schema()
@@ -16,7 +17,11 @@ data class LuckSendLuckDTO(
     @field:Schema(description = "用户ID[1541693333435453411]",type="string",example = "1339468674200637453",required=true)
     @field:JsonSerialize(using = ToStringSerializer::class)
     var  userId:Long?=null,
-	
+
+
+    @field:Schema(description = "消息ID[123]",type="string",example = "1339468674200637453")
+    @field:JsonSerialize(using = ToStringSerializer::class)
+    var  messageId:Long?=null,
 
     @field:Schema(description = "积分[100]",example = "1",required=true)
     var  credit:BigDecimal?=null,

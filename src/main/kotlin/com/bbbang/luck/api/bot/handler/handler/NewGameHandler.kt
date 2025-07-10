@@ -113,6 +113,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
        // println("counts=${counts}")
         val sendLuckPO= LuckSendLuckBO().apply {
             this.userId = wallet.userId
+            this.messageId=input.message?.messageId?.toLong()
             this.redPackNumbers = luckProperties.redPackNumbers
             this.boomNumber = Integer.valueOf(boomNumber)
             this.credit = dollar

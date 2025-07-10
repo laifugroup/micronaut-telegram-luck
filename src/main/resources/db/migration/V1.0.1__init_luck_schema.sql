@@ -240,6 +240,7 @@ drop table if  exists "luck"."luck_send_luck";
 
 create table if not exists "luck"."luck_send_luck" (
       "id" BIGSERIAL  NOT NULL   PRIMARY KEY ,
+      "message_id"  BIGINT NOT NULL,
       "user_id"  BIGINT NOT NULL,
       "credit"  numeric  not null  default 0,
       "red_pack_numbers"  int  not null  default 6,

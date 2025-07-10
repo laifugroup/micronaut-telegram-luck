@@ -30,7 +30,13 @@ data class LuckSendLuckPO(
     @field:JsonSerialize(using = ToStringSerializer::class)
     @field:Comment("用户ID[1541693333435453411]")
     var  userId:Long?=null,
-	
+
+
+    @field:Schema(description = "消息ID[123]",type="string",example = "1339468674200637453")
+    @field:JsonSerialize(using = ToStringSerializer::class)
+    @field:Comment("消息ID[112]")
+    var  messageId:Long?=null,
+
     @field:Schema(description = "积分[100]",example = "1")
     @field:Comment("积分[100]")
     var  credit:BigDecimal?=null,

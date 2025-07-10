@@ -16,7 +16,11 @@ data class LuckSendLuckPageDTO(
     @field:Schema(description = "id",type="string",example = "1339468674200637453")
     @field:JsonSerialize(using = ToStringSerializer::class)
     var  id:Long?=null,
-	
+
+    @field:Schema(description = "消息ID[123]",type="string",example = "1339468674200637453")
+    @field:JsonSerialize(using = ToStringSerializer::class)
+    var  messageId:Long?=null,
+
     @field:Schema(description = "用户ID[1541693333435453411]",type="string",example = "1339468674200637453")
     @field:JsonSerialize(using = ToStringSerializer::class)
     var  userId:Long?=null,
