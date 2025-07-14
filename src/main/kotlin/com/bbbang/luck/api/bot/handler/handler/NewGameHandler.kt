@@ -113,7 +113,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
        // println("counts=${counts}")
         val sendLuckPO= LuckSendLuckBO().apply {
             this.userId = wallet.userId
-            this.messageId=input.message?.messageId?.toLong()
+            this.messageId=input.message?.messageId?.toLong()?.plus(1)//仅仅用于测试
             this.redPackNumbers = luckProperties.redPackNumbers
             this.boomNumber = Integer.valueOf(boomNumber)
             this.credit = dollar
@@ -151,7 +151,7 @@ open class NewGameHandler(private val spaceParser: SpaceParser<Update, Chat>,
             LocaleHelper.EMPTY)
 
         val keyboard=InlineKeyboardMarkupHelper
-            .getGrabInlineKeyboardMarkup(input,total,boomNumber,grabMessage,luckSendLuck,luckProperties,serviceProperties,messageSource)
+            .getGrabInlineKeyboardMarkup(locale,total,boomNumber,grabMessage,luckSendLuck,luckProperties,serviceProperties,messageSource)
 
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
        //SendPhotoUtils.compose(spaceParser,input,photo,caption,inlineKeyboard, ParseMode.MARKDOWN)

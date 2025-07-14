@@ -140,7 +140,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
         luckGoodLuckService.save(luckGoodLuckBO)
         //变更钱红包人数
 
-        input.callbackQuery.message.replyToMessage
+       // input.callbackQuery.message.replyToMessage
         val fromId= input.callbackQuery.message.replyToMessage.from.id
         val firstName= input.callbackQuery.message.replyToMessage.from.firstName
         //val lastName= input.callbackQuery.message.replyToMessage.from.lastName
@@ -160,7 +160,7 @@ open class GrabCallbackHandler(private val spaceParser: SpaceParser<Update, Chat
          }
         val caption=messageSource.getMessage("luck.grab.replay",locale,firstName,fromId,total).orElse(LocaleHelper.EMPTY)
         val keyboard= InlineKeyboardMarkupHelper
-            .getGrabInlineKeyboardMarkup(input,total,boomNumber,grabMessage,luckSendLuck,luckProperties,serviceProperties,messageSource)
+            .getGrabInlineKeyboardMarkup(LocaleHelper.language(input),total,boomNumber,grabMessage,luckSendLuck,luckProperties,serviceProperties,messageSource)
 
         val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 

@@ -11,16 +11,13 @@ import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
 import io.micronaut.chatbots.telegram.api.Update
 import io.micronaut.context.MessageSource
 import java.math.BigDecimal
+import java.util.*
 
 class InlineKeyboardMarkupHelper {
 
     companion object {
 
-       fun getGrabInlineKeyboardMarkup(input:Update, total:String, boomNumber:String,grabMessage:String, luckSendLuck: LuckSendLuckVO, luckProperties: LuckProperties, serviceProperties: ServiceProperties, messageSource: MessageSource): InlineKeyboardMarkup {
-
-            val locale= LocaleHelper.language(input)
-
-
+       fun getGrabInlineKeyboardMarkup(locale: Locale, total:String, boomNumber:String, grabMessage:String, luckSendLuck: LuckSendLuckVO, luckProperties: LuckProperties, serviceProperties: ServiceProperties, messageSource: MessageSource): InlineKeyboardMarkup {
             val keyboard= InlineKeyboardMarkup()
             keyboard.inlineKeyboard= listOf(
                 listOf(
@@ -33,61 +30,61 @@ class InlineKeyboardMarkupHelper {
                 ),
                 listOf(
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.withdrawal", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.withdrawal",locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.WITHDRAWAL
                         //url=""
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.recharge", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.recharge", locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.RECHARGE
 
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.play_rule", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.play_rule",locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.PLAY_RULE
                         url=serviceProperties.playRule
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.balance", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.balance",locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.BALANCE
                     }
                 ),
                 listOf(
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.invite_link", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.invite_link", locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.INVITE_LINK
                         //url=""
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.invite_query", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.invite_query", locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.INVITE_QUERY
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.water_rate", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.water_rate",locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.WATER_RATE
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.game_report", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.game_report",locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.GAME_REPORT
                     }
                 ),
                 listOf(
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.cashier", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.cashier", locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.CASHIER
                         url=serviceProperties.finance
                     },
                     InlineKeyboardButton().apply {
-                        text=messageSource.getMessage("luck.callback.customer_service", LocaleHelper.language(input)).orElse(
+                        text=messageSource.getMessage("luck.callback.customer_service", locale).orElse(
                             LocaleHelper.EMPTY)
                         callbackData= CallbackData.CUSTOMER_SERVICE
                         url=serviceProperties.customerService
@@ -98,6 +95,75 @@ class InlineKeyboardMarkupHelper {
             return keyboard
         }
 
+        fun getGrabResultInlineKeyboardMarkup(locale: Locale, serviceProperties: ServiceProperties, messageSource: MessageSource): InlineKeyboardMarkup {
+            val keyboard= InlineKeyboardMarkup()
+            keyboard.inlineKeyboard= listOf(
+                listOf(
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.withdrawal",locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.WITHDRAWAL
+                        //url=""
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.recharge", locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.RECHARGE
+
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.play_rule",locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.PLAY_RULE
+                        url=serviceProperties.playRule
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.balance",locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.BALANCE
+                    }
+                ),
+                listOf(
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.invite_link", locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.INVITE_LINK
+                        //url=""
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.invite_query", locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.INVITE_QUERY
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.water_rate",locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.WATER_RATE
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.game_report",locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.GAME_REPORT
+                    }
+                ),
+                listOf(
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.cashier", locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.CASHIER
+                        url=serviceProperties.finance
+                    },
+                    InlineKeyboardButton().apply {
+                        text=messageSource.getMessage("luck.callback.customer_service", locale).orElse(
+                            LocaleHelper.EMPTY)
+                        callbackData= CallbackData.CUSTOMER_SERVICE
+                        url=serviceProperties.customerService
+                    },
+                )
+            )
+
+            return keyboard
+        }
 
     }
 }

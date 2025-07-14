@@ -5,6 +5,7 @@ import com.bbbang.luck.api.bot.http.entity.GetWebhookInfo
 import com.bbbang.luck.api.bot.http.entity.TelegramRsp
 import com.bbbang.luck.api.bot.telegram.*
 import com.bbbang.luck.api.bot.type.AllowedUpdatesType
+import com.bbbang.luck.configuration.LuckJob
 import com.bbbang.luck.configuration.properties.BotWebHookProperties
 import com.bbbang.luck.helper.InlineKeyboardMarkupHelper
 import com.bbbang.parent.entities.Rsp
@@ -12,10 +13,7 @@ import com.bbbang.parent.exception.BusinessException
 import com.bbbang.parent.rule.SecurityRules
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.chatbots.core.Dispatcher
-import io.micronaut.chatbots.telegram.api.ChatInviteLink
-import io.micronaut.chatbots.telegram.api.InlineKeyboardButton
-import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
-import io.micronaut.chatbots.telegram.api.Update
+import io.micronaut.chatbots.telegram.api.*
 import io.micronaut.chatbots.telegram.api.send.ParseMode
 import io.micronaut.chatbots.telegram.api.send.Send
 import io.micronaut.chatbots.telegram.api.send.SendPhoto
@@ -28,11 +26,7 @@ import io.micronaut.core.annotation.Introspected
 import io.micronaut.core.util.StringUtils
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpResponse
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Header
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.security.annotation.Secured
@@ -66,6 +60,7 @@ class TelegramBotController
      private val telegramAPI: TelegramBotAPI,
      private val botWebHookProperties: BotWebHookProperties,
      private val objectMapper: ObjectMapper,
+     private val luckJob:LuckJob
 ) {
 
     /**
@@ -118,6 +113,48 @@ class TelegramBotController
     }
 
 
+
+    @Operation(summary ="[新增]红包雨",
+        parameters = [
+            Parameter(
+                name = "chatId",
+                `in` = ParameterIn.QUERY,
+                example = "-1002361396170",
+                required = true
+            ),
+            Parameter(
+                name = "message",
+                `in` = ParameterIn.QUERY,
+                example = "10-2",
+                required = true
+            ),
+        ]
+    )
+    @Get("/redPackRain")
+    @Secured(value = [SecurityRules.IS_ANONYMOUS])
+    fun redPackRain(@QueryValue("chatId") chatId:Long, @QueryValue("message") message:String): HttpResponse<Send> {
+        //发送消息
+        val httpApiToken=botWebHookProperties.httpApiToken
+        val rsp=  telegramAPI.sendMessage(httpApiToken,chatId = chatId,text = message)
+        //分发消息
+        val botOptional = tokenValidator.validate(botWebHookProperties.secretToken)
+         return  dispatcher.dispatch(botOptional.get(), Update().apply {
+                this.message = Message().apply {
+                    this.messageId = rsp.result.messageId
+                    this.chat = Chat().apply {
+                        this.id = chatId
+                    }
+                    this.text = message
+                    this.from = rsp.result.from
+                }
+             })  .map<MutableHttpResponse<Send>> {
+                     body: Send? -> HttpResponse.ok(body)
+             }
+             .orElseGet {
+                 HttpResponse.ok()
+             }
+    }
+
     @Get("/setWebHookUrl")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun setWebHookUrl(): Rsp<TelegramRsp<Boolean>> {
@@ -133,7 +170,7 @@ class TelegramBotController
         val secretToken=botWebHookProperties.secretToken
         //error set
         val rsp=  telegramAPI.setWebhook(httpApiToken,webhookUrl,secretToken,allowedUpdates.joinToString(","))
-      return Rsp.success(rsp)
+        return Rsp.success(rsp)
     }
 
     @Get("/getWebhookInfo")
@@ -144,27 +181,6 @@ class TelegramBotController
         return Rsp.success(rsp)
     }
 
-
-    @Get("/sendMessage")
-    @Secured(value = [SecurityRules.IS_ANONYMOUS])
-    fun sendMessage(): Rsp<TelegramRsp<SendPhotoRsp>> {
-
-         val keyboard= InlineKeyboardMarkup()
-
-        val aaa=InlineKeyboardButton().apply {
-            text="grabMessage"
-            callbackData=CallbackData.GRAB_RED_PACKET
-        }
-        keyboard.inlineKeyboard= listOf(listOf(aaa),listOf(aaa,aaa))
-        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
-
-        val httpApiToken=botWebHookProperties.httpApiToken
-        val rsp=  telegramAPI.sendPhoto(httpApiToken,-1002373808553,
-            "https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png","主动发信息模式",ParseMode.MARKDOWN.toString()
-            ,inlineKeyboard)
-        return Rsp.success(rsp)
-    }
-
     /**
      * 只能编辑自己发送的信息。
      */
@@ -172,18 +188,9 @@ class TelegramBotController
     @Get("/editMessageCaption")
     @Secured(value = [SecurityRules.IS_ANONYMOUS])
     fun editMessageCaption(): Rsp<TelegramRsp<EditMessageCaptionRsp>> {
-        val keyboard= InlineKeyboardMarkup()
-        val aaa=InlineKeyboardButton().apply {
-            text="haha111"
-            callbackData=CallbackData.GRAB_RED_PACKET
-        }
-        keyboard.inlineKeyboard= listOf(listOf(aaa),listOf(aaa,aaa))
-        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
 
-        val rsp=telegramAPI.editMessageCaption(httpApiToken=botWebHookProperties.httpApiToken
-            ,-1002373808553,39,"我是编辑内容",parseMode=ParseMode.MARKDOWN.toString()
-            ,replyMarkup=inlineKeyboard)
-        return Rsp.success(rsp)
+        luckJob.openLuck()
+        return Rsp.success()
     }
 
     companion object {

@@ -5,7 +5,9 @@ import com.bbbang.luck.api.bot.http.entity.TelegramRsp
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.chatbots.telegram.api.ChatInviteLink
 import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
+import io.micronaut.chatbots.telegram.api.send.SendMessage
 import io.micronaut.chatbots.telegram.api.send.SendPhoto
+import io.micronaut.chatbots.telegram.api.send.SendText
 import io.micronaut.context.annotation.Parameter
 import io.micronaut.core.annotation.NonNull
 import io.micronaut.core.async.annotation.SingleResult
@@ -67,10 +69,11 @@ interface TelegramBotAPI {
     : TelegramRsp<SendPhotoRsp>
 
 
-    @Post("/bot{httpApiToken}/sendPhoto")
+    @Post("/bot{httpApiToken}/sendMessage")
     @SingleResult
-    fun sendPhoto2(@PathVariable("httpApiToken")httpApiToken:String
-                  ,@QueryValue  sendPhoto: SendPhotoParams
+    fun sendMessage(@PathVariable("httpApiToken")httpApiToken:String
+        ,@QueryValue("chat_id") chatId:Long
+        , @QueryValue("text") text:String
     ): TelegramRsp<SendPhotoRsp>
 
     /**
@@ -90,7 +93,6 @@ interface TelegramBotAPI {
                            @QueryValue("reply_markup")
                            replyMarkup: String? = null,
     )
-    : TelegramRsp<EditMessageCaptionRsp>
 
 }
 

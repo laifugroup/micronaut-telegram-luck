@@ -1,13 +1,19 @@
 package com.bbbang.luck.service.bot.service
 
 
+import com.bbbang.luck.api.bot.core.CallbackData
+import com.bbbang.luck.api.bot.telegram.TelegramBotAPI
 import com.bbbang.luck.api.bot.type.CreditLogType
 import com.bbbang.luck.api.bot.type.SendLuckType
+import com.bbbang.luck.configuration.properties.BotWebHookProperties
 import com.bbbang.luck.configuration.properties.LuckProperties
+import com.bbbang.luck.configuration.properties.ServiceProperties
 import com.bbbang.luck.domain.po.LuckGoodLuckPO
 import com.bbbang.luck.domain.po.LuckCreditLogPO
+import com.bbbang.luck.domain.po.LuckSendLuckPO
 import com.bbbang.luck.domain.vo.LuckSendLuckVO
 import com.bbbang.luck.event.DivideRedPackEvent
+import com.bbbang.luck.helper.InlineKeyboardMarkupHelper
 import com.bbbang.luck.repository.LuckCreditLogRepository
 import com.bbbang.luck.repository.LuckGoodLuckRepository
 import com.bbbang.luck.repository.LuckSendLuckRepository
@@ -16,7 +22,11 @@ import com.bbbang.luck.service.LuckCreditLogService
 import com.bbbang.luck.service.LuckWalletService
 import com.bbbang.luck.service.LuckGoodLuckService
 import com.bbbang.luck.service.LuckUserService
+import com.bbbang.luck.utils.LocaleHelper
 import com.bbbang.parent.exception.BusinessException
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.micronaut.chatbots.telegram.api.InlineKeyboardButton
+import io.micronaut.chatbots.telegram.api.InlineKeyboardMarkup
 import io.micronaut.chatbots.telegram.api.send.ParseMode
 import io.micronaut.context.MessageSource
 import jakarta.inject.Singleton
@@ -40,7 +50,11 @@ class DivideRedPackService (
     private val luckGoodLuckRepository: LuckGoodLuckRepository,
     private val luckSendLuckRepository: LuckSendLuckRepository,
     private val luckWalletRepository: LuckWalletRepository,
-    private val luckCreditLogRepository: LuckCreditLogRepository
+    private val luckCreditLogRepository: LuckCreditLogRepository,
+    private val telegramBotAPI: TelegramBotAPI,
+    private val botWebHookProperties: BotWebHookProperties,
+    private val objectMapper: ObjectMapper,
+    private val serviceProperties: ServiceProperties,
     ){
 
 
@@ -56,9 +70,8 @@ class DivideRedPackService (
        val goodLuckList= luckGoodLuckService.findByLuckRedPackId(redPackId)
        val divide= luckRunningService.divide(goodLuck=goodLuckList, amount=amount,numbers=numbers)
        val boomUserList=luckUserService.findByIdInList(goodLuckList.filter { it.boomNumber==it.lastNumber }.map {goodLuck-> goodLuck.userId })
-       val userWallet=  boomUserList.filter { it.inviterUserId!=null }.map {user-> user.inviterUserId }.flatMap {
-            luckWalletService.findByUserIdInList(goodLuckList.map { goodLuck-> goodLuck.userId }+sendRedPackVO.userId+it)
-       }
+       val boomUserId= boomUserList.filter { it.inviterUserId!=null }.map {user-> user.inviterUserId }
+        val userWallet=    luckWalletService.findByUserIdInList(goodLuckList.map { goodLuck-> goodLuck.userId }+sendRedPackVO.userId+boomUserId)
        val creditLogPOList=ArrayList<LuckCreditLogPO>()
 
         goodLuckList.forEach{  goodLuck ->
@@ -137,19 +150,19 @@ class DivideRedPackService (
                     creditLogPOList.add(boomLuckCreditAgentWater)
 
                 //+ 下级中雷分成(即 -代理抽成的金额) 1. 如果没有邀请代理，不分。
-                val inviteeUserId=boomUserList.first{ boomUser-> boomUser.id==goodLuck.userId }.inviterUserId
+                val inviteeUserId=boomUserList.firstOrNull { boomUser-> boomUser.id==goodLuck.userId }?.inviterUserId
                 inviteeUserId?.let {
-                    val agentWallet=userWallet.first{  it.userId==inviteeUserId}
+                    val agentWallet=userWallet.firstOrNull {  it.userId==inviteeUserId}
                     val getBoomLuckCreditAgentWater=LuckCreditLogPO().apply {
                         this.credit = luckBoomAgentWater
-                        this.userId = agentWallet.userId
+                        this.userId = agentWallet?.userId
                         this.type = CreditLogType.CHILD_BOOM_REBATE.code
                         this.remark = "${CreditLogType.CHILD_BOOM_REBATE.desc}[$redPackId]"
-                        this.creditBefore = agentWallet.credit?.add(BigDecimal.ZERO)
+                        this.creditBefore = agentWallet?.credit?.add(BigDecimal.ZERO)
                         this.creditAfter = this.creditBefore?.plus(this.credit?: BigDecimal.ZERO)
-                        this.groupId=agentWallet.groupId
+                        this.groupId=agentWallet?.groupId
                     }
-                    agentWallet.credit=getBoomLuckCreditAgentWater.creditAfter?.add(BigDecimal.ZERO)
+                    agentWallet?.credit=getBoomLuckCreditAgentWater.creditAfter?.add(BigDecimal.ZERO)
                     creditLogPOList.add(getBoomLuckCreditAgentWater)
 
                 }
@@ -171,7 +184,59 @@ class DivideRedPackService (
         //保存明细记录
         luckCreditLogRepository.saveAll(creditLogPOList)
 
+        sendGameResult(sendRedPackVO, goodLuckList)
+    }
 
+
+    private fun sendGameResult( sendRedPack: LuckSendLuckPO,goodLuckList : List<LuckGoodLuckPO>){
+        val httpApiToken=botWebHookProperties.httpApiToken
+        val chatId=sendRedPack.groupId
+        val messageId=sendRedPack.messageId
+        val parseMode=ParseMode.MARKDOWN.toString()
+        //replyMarkup
+        val locale=Locale.CHINESE
+        val decimalFormat=DecimalFormat("#.00")
+        val luckResultOver = messageSource.getMessage(
+            "luck.result.over",
+            locale,
+            sendRedPack?.firstName ?: "",
+            sendRedPack?.userId,
+            sendRedPack?.credit,
+            luckProperties.redPackNumbers,
+            luckProperties.odds,
+            sendRedPack?.boomNumber
+        ).orElse(LocaleHelper.EMPTY)
+
+        //2.
+        val luckResultItems = StringBuilder()
+        luckResultItems.append("`")
+        val boomFlag=messageSource.getMessage("luck.result.item.boom", locale, ).orElse(LocaleHelper.EMPTY)
+        val usdFlag=messageSource.getMessage("luck.result.item.usd", locale, ).orElse(LocaleHelper.EMPTY)
+
+        goodLuckList.forEach{goodLuck ->
+            val boom=goodLuck?.lastNumber==sendRedPack?.boomNumber
+            val   luckResultItem=messageSource.getMessage(
+                "luck.result.item",locale,
+                if (boom)  boomFlag  else usdFlag,
+                decimalFormat.format(goodLuck.credit),
+                if (goodLuck.firstName?.length?:0 <=5) goodLuck.firstName else "${goodLuck.firstName?.substring(0,5)}..",
+            ).orElse(LocaleHelper.EMPTY)
+            luckResultItems.append(luckResultItem)
+        }
+        luckResultItems.append("`")
+        //3.
+        val sendUserLuck= goodLuckList.filter { it.boomNumber == it.lastNumber }.sumOf { sendRedPack.odds!!.toDouble() }
+        val cost = sendRedPack?.credit
+        val amountReceived = sendUserLuck.minus(cost!!.toDouble())
+        val luckResultCost = messageSource.getMessage("luck.result.cost", locale, sendUserLuck, "-${cost}", amountReceived,goodLuckList.map { it.lastNumber }.joinToString("-")).orElse(LocaleHelper.EMPTY)
+
+        val replayLuckMessage = "$luckResultOver$luckResultItems$luckResultCost"
+
+        val keyboard= InlineKeyboardMarkupHelper
+            .getGrabResultInlineKeyboardMarkup(Locale.CHINESE,serviceProperties,messageSource)
+        val inlineKeyboard= objectMapper.writeValueAsString(keyboard)
+       println("messageId $messageId")
+        telegramBotAPI.editMessageCaption(httpApiToken,chatId!!,157, caption = replayLuckMessage,parseMode,inlineKeyboard)
     }
 
 }
